@@ -183,7 +183,7 @@ fun clickAbleText(
 }
 
 @Composable
-fun otherSignMethod(btnState:Boolean , isLoading: Boolean  , facebook : ()-> Unit , google : () -> Unit , button :()-> Unit ){
+fun otherSignMethod(btnState:Boolean , isLoading: Boolean  , buttonTitle : String , facebook : ()-> Unit , google : () -> Unit , button :()-> Unit ){
     Box(
         modifier = Modifier
             .fillMaxWidth()

@@ -1,10 +1,9 @@
 package com.foof.signalprovider.screens.Auth
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.foof.signalprovider.DataModels.UserData
 import com.foof.signalprovider.Repo.Auth.AuthRepository
 import com.foof.signalprovider.Repo.Response
@@ -27,8 +26,8 @@ class AuthViewModel @Inject constructor(
     private val _signInStatus = MutableStateFlow<Response<UserData>>(Response.Empty)
     val signInStatus: Flow<Response<UserData>> = _signInStatus
 
-    private val _signOutStatus = MutableStateFlow<Response<String>>(Response.Empty)
-    val signOutStatus: Flow<Response<String>> = _signOutStatus
+    private val _resetPassword = MutableStateFlow<Response<String>>(Response.Empty)
+    val resetPassword: Flow<Response<String>> = _resetPassword
 
     private val _userExist = MutableStateFlow<Response<Boolean>>(Response.Empty)
     val userExist: Flow<Response<Boolean>> = _userExist
@@ -41,11 +40,29 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun userExist(email: String) = viewModelScope.launch {
+    fun userExist(email: String, navController: NavHostController) = viewModelScope.launch {
         _userExist.value = Response.Loading
-        userRepo.userExists(email).collect { result ->
+        userRepo.userExists(email , navController).collect { result ->
             _userExist.value = result
         }
+    }
+
+    fun resetPassword(email: String, userPass: String ,  newPass: String) = viewModelScope.launch {
+        _userExist.value = Response.Loading
+        authenticationRepository.loginUser(email , userPass).collect{
+            when(it)
+            {
+                is Response.Success ->{
+                    userRepo.resetUserPass(it.data , newPass).collect { result ->
+                        _resetPassword.value = result
+                    }
+                }
+                Response.Empty -> {}
+                is Response.Error -> {_resetPassword.value = Response.Error("Something Wrong")}
+                Response.Loading -> {}
+            }
+        }
+
     }
 
     fun signIn(email: String, password: String) = viewModelScope.launch {

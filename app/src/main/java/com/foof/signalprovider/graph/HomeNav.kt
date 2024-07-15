@@ -6,8 +6,8 @@ import androidx.navigation.compose.navigation
 
 fun NavGraphBuilder.homeNav()
 {
-    navigation(startDestination = NavRouts.AppRoute.route , route = NavRouts.AppRoute.route)
-    {
-
-    }
+//    navigation()
+//    {
+//
+//    }
 }

@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import com.foof.signalprovider.DataModels.UserData
 import com.foof.signalprovider.Repo.Response
 import com.foof.signalprovider.Utils.isValidEmail
+import com.foof.signalprovider.graph.AuthRouts
 import com.foof.signalprovider.ui.theme.mediumHint
 import com.google.firebase.auth.AuthResult
 
@@ -65,7 +66,7 @@ fun loginScreen(
                 isLoading.value = false
                 error.value = (result as Response.Error).message
                 userValidation.value = true
-                Log.d("status", (result as Response.Error).message)
+                Log.d("error", (result as Response.Error).message)
             }
             Response.Empty -> {
                 Log.d("status", "Empty response")
@@ -82,15 +83,15 @@ fun loginScreen(
                 .verticalScroll(rememberScrollState())) {
             header("Welcome Back \uD83E\uDD17  ","Login to your account." , true)
             editextBox(email, false , Modifier.padding(0.dp, 25.dp, 0.dp, 8.dp) , "Email" , emailValidation.value , "Email not valid" )
-            editextBox(password, true , Modifier.padding(0.dp, 16.dp, 0.dp, 8.dp) , "Password", userValidation.value , "")
+            editextBox(password, true , Modifier.padding(0.dp, 16.dp, 0.dp, 8.dp) , "Password", userValidation.value , error.value)
             clickAbleText(
                 space = 16,
                 nonClickable = "Forget Password" ,
                 clickable = "Recover" , Arrangement.Absolute.Left ,
                 enabled = true,
-                nonClickableStyle = MaterialTheme.typography.displaySmall) {navController.navigate("forgetPass")}
+                nonClickableStyle = MaterialTheme.typography.displaySmall) {navController.navigate(AuthRouts.ForgetPassRoute.route)}
 
-            otherSignMethod(btnState.value, isLoading.value,{},{},{
+            otherSignMethod(btnState.value, isLoading.value,"Sign in",{},{},{
                 emailValidation.value = !email.value.isValidEmail()
                 if (!emailValidation.value){
                     authViewModel.signIn(email.value , password.value)
@@ -107,7 +108,7 @@ fun loginScreen(
                         clickable = "Sign Up",
                         alignment = Arrangement.Center ,
                         enabled = true,
-                        nonClickableStyle = mediumHint) {navController.navigate("signUp")}
+                        nonClickableStyle = mediumHint) {navController.navigate(AuthRouts.RegisterRoute.route)}
             }
         }
     }

@@ -13,29 +13,33 @@ import com.foof.signalprovider.screens.Auth.signUpScreen
 
 fun NavGraphBuilder.authNav(navController: NavHostController, authViewModel: AuthViewModel)
 {
-
-    navigation( startDestination = "login" , route = NavRouts.AuthRoute.route)
+    navigation( startDestination = AuthRouts.LoginRoute.route , route = NavRouts.AuthRoute.route)
     {
-        composable("login")
+        composable(AuthRouts.LoginRoute.route)
         {
             loginScreen(navController , authViewModel)
         }
-        composable("signUp")
+        composable(AuthRouts.RegisterRoute.route)
         {
             signUpScreen(navController , authViewModel)
         }
-        composable("forgetPass")
+        composable(AuthRouts.ForgetPassRoute.route)
         {
-            forgetPasswordScreen(navController , authViewModel)
+            forgetPasswordScreen(navController,  authViewModel)
         }
-        composable("otp/{email}")
+
+        composable("${AuthRouts.OTPRoute.route}/{email}/{password}")
         {
             val email = it.arguments?.getString("email")
-            otpScreem(navController , email)
+            val password = it.arguments?.getString("password")
+            otpScreem(navController , email , password)
         }
-        composable("newPass")
+        composable("${AuthRouts.NewPassRoute.route}/{email}/{password}")
         {
-            newPasScreen(navController)
+            val email = it.arguments?.getString("email")
+            val password = it.arguments?.getString("password")
+            newPasScreen(navController,  authViewModel,email , password)
         }
+
     }
 }

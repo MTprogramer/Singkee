@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.foof.signalprovider.Utils.OTP
+import com.foof.signalprovider.graph.AuthRouts
 import com.foof.signalprovider.ui.theme.editextbg
 import com.foof.signalprovider.ui.theme.errorStyle
 import com.foof.signalprovider.ui.theme.light_blue
@@ -34,9 +36,10 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun otpScreem(navController: NavHostController, email: String?)
+fun otpScreem(navController: NavHostController, email: String?, password: String?)
 {
     val otp = remember{ mutableStateOf("") }
+    val otpError = remember{ mutableStateOf("Otp is not valid") }
     val countDownStateString = remember { mutableStateOf("") }
     val resamdState = remember { mutableStateOf(false) }
     val verifyState = remember { mutableStateOf(false) }
@@ -44,10 +47,11 @@ fun otpScreem(navController: NavHostController, email: String?)
 
 
     val otpValidation = remember { mutableStateOf(false) }
+    val otpExpiration = remember { mutableStateOf(false) }
     val isLoading = remember { mutableStateOf(false) }
 
     if (isCountLunch.value)
-        startCount(countDownStateString , resamdState , isCountLunch)
+        startCount(countDownStateString , resamdState , isCountLunch , otpExpiration)
 
 
     Box(modifier = Modifier.padding(start = 20.dp , end = 20.dp))
@@ -72,7 +76,7 @@ fun otpScreem(navController: NavHostController, email: String?)
                 type = "Enter OTP",
                 verifyState = verifyState,
                 onError = otpValidation.value,
-                info = "Otp is not valid"
+                info = otpError.value
             )
             Column(modifier = Modifier
                 .fillMaxSize()
@@ -85,11 +89,30 @@ fun otpScreem(navController: NavHostController, email: String?)
                     clickable = "${countDownStateString.value}  ",
                     alignment = Arrangement.Center ,
                     enabled = resamdState.value,
-                    nonClickableStyle = MaterialTheme.typography.titleMedium) { isCountLunch.value = true }
+                    nonClickableStyle = MaterialTheme.typography.titleMedium) {
+                    isCountLunch.value = true
+                    OTP.otpEmail(email!!)
+                }
 
 
                 Spacer(modifier = Modifier.height(40.dp))
-                button(title = "Verify" , enabled = verifyState.value , isLoading = isLoading.value) {navController.navigate("newPass")}
+                button(title = "Verify" , enabled = verifyState.value , isLoading = isLoading.value)
+                {
+                    if (otpExpiration.value)
+                    {
+                        otpError.value = "Your Otp Expired"
+                        otpValidation.value = true
+                    }
+                    else {
+                        if (otp.value == OTP.currentOtp)
+                            navController.navigate("${ AuthRouts.NewPassRoute.route }/$email/$password")
+                        else {
+                            otpError.value = "Otp is not valid"
+                            otpValidation.value = true
+                        }
+                    }
+
+                }
 
                 Spacer(modifier = Modifier.height(40.dp))
                 clickAbleText(
@@ -98,11 +121,13 @@ fun otpScreem(navController: NavHostController, email: String?)
                     clickable = "Login",
                     alignment = Arrangement.Center ,
                     enabled = true,
-                    nonClickableStyle = mediumHint) {navController.navigate("login"){popUpTo("login"){inclusive = true} } }
+                    nonClickableStyle = mediumHint) {
+                    navController.popBackStack(AuthRouts.LoginRoute.route, inclusive = false) }
+                }
             }
         }
-    }
 }
+
 
 
 @Composable
@@ -139,7 +164,7 @@ private fun otpBox(
     {
         Text(
             text = info,
-            modifier = Modifier,
+            modifier = Modifier.padding(top = 5.dp),
             style = errorStyle
         )
     }
@@ -149,20 +174,23 @@ private fun otpBox(
 fun startCount(
     countDownStateString: MutableState<String>,
     buttonState: MutableState<Boolean>,
-    isCountLunch: MutableState<Boolean>
+    isCountLunch: MutableState<Boolean>,
+    otpExpiration: MutableState<Boolean>
 )
 {
     val countDownState = remember { mutableStateOf(60) } // 1 minute = 60 seconds
     LaunchedEffect(Unit) {
         launch {
             buttonState.value = false
+            otpExpiration.value = false
             while (countDownState.value > 0) {
                 countDownStateString.value = countDownState.value.toString() + " sec"
                 delay(1000) // wait for 1 second
                 countDownState.value -= 1
             }
+            otpExpiration.value = true
             buttonState.value = true
-            countDownStateString.value = "Resent"
+            countDownStateString.value = "Resend"
             countDownState.value = 60
             isCountLunch.value = false
 

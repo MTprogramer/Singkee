@@ -9,7 +9,6 @@ import com.foof.signalprovider.screens.Auth.AuthViewModel
 @Composable
 fun Nav()
 {
-
     val authViewModel : AuthViewModel = hiltViewModel()
 
     val navController = rememberNavController()

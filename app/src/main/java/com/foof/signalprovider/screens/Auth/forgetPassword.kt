@@ -24,13 +24,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.foof.signalprovider.Repo.Response
 import com.foof.signalprovider.Utils.isValidEmail
+import com.foof.signalprovider.graph.AuthRouts
 import com.foof.signalprovider.ui.theme.mediumHint
-import com.google.firebase.auth.AuthResult
 
 @Composable
 fun forgetPasswordScreen(navController: NavHostController, authViewModel: AuthViewModel)
 {
     val email = remember { mutableStateOf("") }
+    val errorMessage = remember { mutableStateOf("Email not valid") }
 
     val emailValidation = remember { mutableStateOf(false)}
     val btnState = remember { mutableStateOf(false) }
@@ -46,19 +47,15 @@ fun forgetPasswordScreen(navController: NavHostController, authViewModel: AuthVi
         when (result) {
             is Response.Loading -> {
                 isLoading.value = true
-                Log.d("status", "Losding")
             }
 
             is Response.Success -> {
                 isLoading.value = false
-                Log.d(
-                    "status",
-                    "suceess + ${(result as Response.Success<Boolean>).data}"
-                )
             }
             is Response.Error -> {
                 isLoading.value = false
-                Log.d("status", (result as Response.Error).message)
+                errorMessage.value = (result as Response.Error).message
+                emailValidation.value = true
             }
             Response.Empty -> {}
         }
@@ -70,23 +67,23 @@ fun forgetPasswordScreen(navController: NavHostController, authViewModel: AuthVi
             Modifier
                 .verticalScroll(rememberScrollState())) {
             header("Forgot Password","Enter your email to continue" , false)
-            editextBox(email, false , Modifier.padding(0.dp, 25.dp, 0.dp, 8.dp) , "Email Address" , emailValidation.value , "Email not valid")
+            editextBox(email, false , Modifier.padding(0.dp, 25.dp, 0.dp, 8.dp) , "Email Address" , emailValidation.value , errorMessage.value)
             Column(modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 40.dp, bottom = 20.dp), horizontalAlignment = Alignment.CenterHorizontally ) {
                 button(title = "Get Code" , btnState.value , isLoading = isLoading.value)
                 {
                     emailValidation.value = !email.value.isValidEmail()
+                    errorMessage.value = "Email not valid"
 
                     if (!emailValidation.value)
-                        authViewModel.userExist(email.value)
-//                        navController.navigate("otp/${email.value}")
+                        authViewModel.userExist(email.value , navController)
                 }
                 Spacer(modifier = Modifier.height(40.dp))
                 clickAbleText(
                     space =0, nonClickable ="Back to " ,
-                    clickable = "Login", alignment = Arrangement.Center ,
-                    enabled = true, nonClickableStyle = mediumHint) {navController.navigate("login"){popUpTo("login"){inclusive = true} } }
+                    clickable = "Login", alignment = Arrangement.Center,
+                    enabled = true, nonClickableStyle = mediumHint) {navController.popBackStack(AuthRouts.LoginRoute.route,false)}
             }
         }
     }

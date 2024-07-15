@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "473136712547",
+    "project_id": "singlee-18637",
+    "storage_bucket": "singlee-18637.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:473136712547:android:404998b35611fa7253e156",
+        "android_client_info": {
+          "package_name": "com.foof.signalprovider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkHz6kZi4QX2LVXTg9kOXI5RlszrYRS6k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

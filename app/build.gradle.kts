@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.foof.signalprovider"
+    namespace = "com.Singlee.forex"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.foof.signalprovider"
+        applicationId = "com.Singlee.forex"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -77,7 +77,14 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.play.services.auth)
+    implementation(libs.facebook.android.sdk)
+
+
+    implementation("androidx.credentials:credentials:1.2.2")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
 
 
     implementation("com.github.ehsannarmani:OtpCompose:0.0.4")

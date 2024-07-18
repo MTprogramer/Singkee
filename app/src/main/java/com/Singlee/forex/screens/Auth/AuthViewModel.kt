@@ -1,5 +1,6 @@
 package com.Singlee.forex.screens.Auth
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import androidx.credentials.GetCredentialRequest
@@ -12,10 +13,17 @@ import com.Singlee.forex.DataModels.UserData
 import com.Singlee.forex.Repo.Auth.AuthRepository
 import com.Singlee.forex.Repo.Response
 import com.Singlee.forex.Repo.User.UserRepo
+import com.facebook.AccessToken
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -136,6 +144,42 @@ class AuthViewModel @Inject constructor(
         authenticationRepository.googleSignIn(credential).collect { result ->
             _registrationStatus.value = result
         }
+    }
+
+
+
+
+    val callbackManager: CallbackManager = CallbackManager.Factory.create()
+
+    fun signInWithFacebook(activity: Activity) {
+
+        LoginManager.getInstance().logInWithReadPermissions(activity, listOf("email", "public_profile"))
+
+        LoginManager.getInstance().registerCallback(callbackManager, object :
+            FacebookCallback<LoginResult> {
+            override fun onCancel() {
+                Log.d("error","cancel")
+            }
+
+            override fun onError(error: FacebookException) {
+                Log.d("error",error.message.toString())
+            }
+
+            override fun onSuccess(result: LoginResult) {
+                handleFacebookAccessToken(result.accessToken)
+            }
+        })
+    }
+
+    private fun handleFacebookAccessToken(token: AccessToken?) {
+        val credential = FacebookAuthProvider.getCredential(token?.token!!)
+        googleSignIn(credential)
+
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        LoginManager.getInstance().unregisterCallback(callbackManager)
     }
 
 }

@@ -1,8 +1,11 @@
 package com.Singlee.forex.screens.Auth
 
 
+import android.app.Activity
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,8 +39,10 @@ import com.Singlee.forex.ui.theme.mediumHint
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
+import com.facebook.internal.FacebookInitProvider
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
+import com.google.android.play.integrity.internal.al
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FacebookAuthProvider
@@ -69,15 +74,13 @@ fun signUpScreen(navController: NavController, authViewModel: AuthViewModel)
 
     val loginManager = LoginManager.getInstance()
     val callbackManager = remember { CallbackManager.Factory.create() }
-    val launcher = rememberLauncherForActivityResult(
-        loginManager.createLogInActivityResultContract(callbackManager, null)) {
-        // nothing to do. handled in FacebookCallback
-    }
+
 
     DisposableEffect(Unit) {
         loginManager.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onCancel() {
                 // do nothing
+                Log.d("error","cencel")
             }
 
             override fun onError(error: FacebookException) {
@@ -145,36 +148,8 @@ fun signUpScreen(navController: NavController, authViewModel: AuthViewModel)
 
             otherSignMethod(btnState.value , isLoading.value ,"Sign up",{
 
-//                val callbackManager = CallbackManager.Factory.create()
-//
-//                LoginManager.getInstance().apply {
-//                    logInWithReadPermissions(context as MainActivity, listOf("email", "public_profile"))
-//                    registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
-//                        override fun onCancel() {
-//                            // Handle cancellation
-//                            Log.d("FacebookLogin", "Login canceled")
-//                        }
-//
-//                        override fun onError(error: FacebookException) {
-//                            // Handle login error
-//                            Log.e("FacebookLogin", "Login error", error)
-//                        }
-//
-//                        override fun onSuccess(result: LoginResult) {
-//                            scope.launch {
-//                                try {
-//                                    val token = result.accessToken.token
-//                                    val credential = FacebookAuthProvider.getCredential(token)
-//                                    authViewModel.googleSignIn(credential)
-//                                } catch (e: Exception) {
-//                                    Log.e("FacebookLogin", "Error during Firebase sign-in", e)
-//                                }
-//                            }
-//                        }
-//                    })
-//                }
 
-                launcher.launch(listOf("email", "public_profile"))
+                authViewModel.signInWithFacebook(context as MainActivity)
 
             },{
                 authViewModel.googleSignIn(credentialManager,context, Constant.clint_ID)

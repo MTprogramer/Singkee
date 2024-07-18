@@ -6,6 +6,9 @@ import com.Singlee.forex.DataModels.UserData
 import com.Singlee.forex.Repo.Response
 import com.Singlee.forex.Repo.safeApiCall
 import com.Singlee.forex.Utils.welcomeEmail
+import com.facebook.AccessToken
+import com.facebook.Profile
+import com.facebook.login.LoginManager
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -59,6 +62,9 @@ class AuthRepositoryImpl @Inject constructor (
             val response = safeApiCall(context){
                 Log.d("cred",credentials.toString())
                 val result =  firebaseAuth.signInWithCredential(credentials).await()
+
+                LoginManager.getInstance().logOut()
+                firebaseAuth.signOut()
 
                 Log.d("result",result.toString())
                 result.user?.email?.let { Log.d("email", it) }

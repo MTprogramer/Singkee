@@ -79,7 +79,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.play.services.auth)
-    implementation(libs.facebook.android.sdk)
+//    implementation(libs.facebook.android.sdk)
+//    implementation("com.facebook.android:facebook-android-sdk:latest.release")
+
+    implementation("com.facebook.android:facebook-login:17.0.0")
 
 
     implementation("androidx.credentials:credentials:1.2.2")

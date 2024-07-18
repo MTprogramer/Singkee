@@ -5,6 +5,7 @@ import com.Singlee.forex.Repo.Auth.AuthRepository
 import com.Singlee.forex.Repo.Auth.AuthRepositoryImpl
 import com.Singlee.forex.Repo.User.UserRepo
 import com.Singlee.forex.Repo.User.UserRepoImpl
+import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -24,13 +25,17 @@ object AppModule
 
     @Provides
     @Singleton
+    fun loginManager() = LoginManager.getInstance()
+
+    @Provides
+    @Singleton
     fun provideFireStore() = FirebaseFirestore.getInstance()
 
     @Provides
     @Singleton
-    fun authRepoImp(firebaseAuth: FirebaseAuth , firebaseFirestore: FirebaseFirestore , @ApplicationContext context: Context) : AuthRepository
+    fun authRepoImp(firebaseAuth: FirebaseAuth , firebaseFirestore: FirebaseFirestore  , @ApplicationContext context: Context) : AuthRepository
     {
-        return AuthRepositoryImpl(firebaseAuth , firebaseFirestore , context  )
+        return AuthRepositoryImpl(firebaseAuth , firebaseFirestore ,   context)
     }
 
     @Provides

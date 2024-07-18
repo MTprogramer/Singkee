@@ -2,9 +2,9 @@
     <string name="app_name">SignalProvider</string>
 
 
-    <string name="facebook_app_id">396225036292117</string>
-    <string name="fb_login_protocol_scheme">fb396225036292117</string>
-    <string name="facebook_client_token">18cbd0f4b8cc0a5d3f8e80b94a8e7669</string>
+    <string name="facebook_app_id">1148169556262606</string>
+    <string name="fb_login_protocol_scheme">fb1148169556262606</string>
+    <string name="facebook_client_token">f819f7827816bbc0672b8d9a4a349ba8</string>
 
 
 </resources>

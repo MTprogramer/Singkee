@@ -23,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -197,24 +198,24 @@ fun otherSignMethod(btnState:Boolean , isLoading: Boolean  , buttonTitle : Strin
                verticalAlignment = Alignment.CenterVertically,
                modifier = Modifier.fillMaxWidth()
            ) {
-               Divider(
-                   color = extra_light,
-                   thickness = 1.dp,
+               HorizontalDivider(
                    modifier = Modifier
                        .weight(1f)
-                       .padding(end = 10.dp)
+                       .padding(end = 10.dp),
+                   thickness = 1.dp,
+                   color = extra_light
                )
                Text(
                    text = "Or Register with",
                    modifier = Modifier.padding(horizontal = 10.dp),
                    style = smalhint
                )
-               Divider(
-                   color = extra_light,
-                   thickness = 1.dp,
+               HorizontalDivider(
                    modifier = Modifier
                        .weight(1f)
-                       .padding(start = 10.dp)
+                       .padding(start = 10.dp),
+                   thickness = 1.dp,
+                   color = extra_light
                )
            }
 
@@ -258,8 +259,12 @@ fun otherOtherButton(button: () -> Unit, image: Int)
 fun button(title : String , enabled: Boolean,isLoading : Boolean ,button: () -> Unit)
 {
     Button(onClick =  button ,
-        colors = ButtonDefaults.buttonColors(containerColor = if (enabled && !isLoading) button_blue else hintColor ,
-        contentColor = titleColor),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = button_blue  ,
+            contentColor = titleColor,
+            disabledContainerColor = extra_light,
+            disabledContentColor = titleColor
+        ),
         enabled = enabled && !isLoading,
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier

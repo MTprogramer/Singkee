@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -80,11 +81,12 @@ fun loginScreen(
     }
 
 
-    Box(modifier = Modifier.padding(horizontal = 20.dp))
+    Box(modifier = Modifier.padding(horizontal = 20.dp).background(Color.Transparent))
     {
+
         Column(
             Modifier
-                .background(MaterialTheme.colorScheme.background)
+                .background(Color.Transparent)
                 .verticalScroll(rememberScrollState())) {
             header("Welcome Back \uD83E\uDD17  ","Login to your account." , true)
             editextBox(email, false , Modifier.padding(0.dp, 25.dp, 0.dp, 8.dp) , "Email" , emailValidation.value , "Email not valid" )

@@ -1,6 +1,7 @@
 package com.Singlee.forex.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -22,12 +23,36 @@ val tsukimi = FontFamily(
     Font(R.font.tsukimi_bold , weight = FontWeight.Bold)
 )
 
+
+val upgradeGradient = listOf(Color(0xFFDDCEFF), Color(0xFFF01E21))
+
 val authLogo = TextStyle(
     fontSize = 24.sp,
     fontFamily = tsukimi,
     fontWeight = FontWeight.Bold,
     color = logoColor
 )
+
+val signalType = TextStyle(
+    fontSize = 16.sp,
+    fontFamily = sans,
+    fontWeight = FontWeight.SemiBold,
+    color = blue
+)
+
+val signalCradencils = TextStyle(
+    fontSize = 10.sp,
+    fontFamily = sans,
+    fontWeight = FontWeight.SemiBold,
+    color = blue
+)
+val signalValues = TextStyle(
+    fontSize = 12.sp,
+    fontFamily = sans,
+    fontWeight = FontWeight.SemiBold,
+    color = blue
+)
+
 
 val smalhint = TextStyle(
     fontSize = 12.sp,

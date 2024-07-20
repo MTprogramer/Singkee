@@ -82,7 +82,8 @@ fun forgetPasswordScreen(navController: NavHostController, authViewModel: AuthVi
                 clickAbleText(
                     space =0, nonClickable ="Back to " ,
                     clickable = "Login", alignment = Arrangement.Center,
-                    enabled = true, nonClickableStyle = mediumHint) {navController.popBackStack(AuthRouts.LoginRoute.route,false)}
+                    enabled = true, nonClickableStyle = mediumHint) {navController.popBackStack(
+                    AuthRouts.LoginRoute.route,false)}
             }
         }
     }

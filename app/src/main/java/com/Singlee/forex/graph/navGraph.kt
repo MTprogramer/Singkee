@@ -12,8 +12,8 @@ fun Nav()
     val authViewModel : AuthViewModel = hiltViewModel()
 
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = NavRouts.AuthRoute.route) {
-        authNav(navController , authViewModel)
+    NavHost(navController = navController, startDestination = NavRouts.AppRoute.route) {
+        homeNav(navController)
     }
 
 }

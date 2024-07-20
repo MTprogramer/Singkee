@@ -96,7 +96,8 @@ fun loginScreen(
                 nonClickable = "Forget Password" ,
                 clickable = "Recover" , Arrangement.Absolute.Left ,
                 enabled = true,
-                nonClickableStyle = MaterialTheme.typography.displaySmall) {navController.navigate(AuthRouts.ForgetPassRoute.route)}
+                nonClickableStyle = MaterialTheme.typography.displaySmall) {navController.navigate(
+                AuthRouts.ForgetPassRoute.route)}
 
             otherSignMethod(btnState.value, isLoading.value,"Sign in",
                 {

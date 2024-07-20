@@ -1,11 +1,7 @@
 package com.Singlee.forex.screens.Auth
 
 
-import android.app.Activity
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,16 +35,11 @@ import com.Singlee.forex.ui.theme.mediumHint
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
-import com.facebook.internal.FacebookInitProvider
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import com.google.android.play.integrity.internal.al
-import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FacebookAuthProvider
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 @Composable
 fun signUpScreen(navController: NavController, authViewModel: AuthViewModel)
@@ -171,7 +162,8 @@ fun signUpScreen(navController: NavController, authViewModel: AuthViewModel)
                     nonClickable ="Already have an account? " ,
                     clickable = "Login",
                     alignment = Arrangement.Center ,
-                    enabled = true, nonClickableStyle = mediumHint) {navController.popBackStack(AuthRouts.LoginRoute.route, inclusive = false) } }
+                    enabled = true, nonClickableStyle = mediumHint) {navController.popBackStack(
+                    AuthRouts.LoginRoute.route, inclusive = false) } }
             }
         }
     }

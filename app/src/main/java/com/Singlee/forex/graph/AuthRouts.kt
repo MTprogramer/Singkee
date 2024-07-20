@@ -1,5 +1,6 @@
 package com.Singlee.forex.graph
 
+
 sealed class AuthRouts {
     data object LoginRoute : NavRouts("login")
     data object RegisterRoute : NavRouts("register")

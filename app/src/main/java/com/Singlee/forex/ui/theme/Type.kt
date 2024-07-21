@@ -19,6 +19,7 @@ val interFontFamily = FontFamily(
 val sans = FontFamily(
     Font(R.font.opensans_semibold , weight = FontWeight.SemiBold)
 )
+
 val tsukimi = FontFamily(
     Font(R.font.tsukimi_bold , weight = FontWeight.Bold)
 )

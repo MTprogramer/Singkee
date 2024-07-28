@@ -5,11 +5,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.Singlee.forex.screens.Home.AllSignalScreen
+import com.Singlee.forex.screens.Home.ChatScreen
 import com.Singlee.forex.screens.Home.PremiumPlan
+import com.Singlee.forex.screens.Home.ProfileScreen
+import com.Singlee.forex.screens.Home.ReportScreen
+import com.Singlee.forex.screens.Home.StartChat
+import com.Singlee.forex.screens.NavScreen
 
 fun NavGraphBuilder.homeNav(navController: NavHostController)
 {
-    navigation(startDestination = HomeRoutes.PremiumRoute.route , route = NavRouts.AppRoute.route)
+    navigation(startDestination = HomeRoutes.NavScreen.route , route = NavRouts.AppRoute.route)
     {
         composable(HomeRoutes.HomeRoute.route)
         {
@@ -17,7 +22,27 @@ fun NavGraphBuilder.homeNav(navController: NavHostController)
         }
         composable(HomeRoutes.PremiumRoute.route)
         {
-            PremiumPlan()
+            PremiumPlan(navController)
+        }
+        composable(HomeRoutes.StartChatRoute.route)
+        {
+            StartChat(navController)
+        }
+        composable(HomeRoutes.ChatScreenRoute.route)
+        {
+            ChatScreen(navController)
+        }
+        composable(HomeRoutes.ReportScreen.route)
+        {
+            ReportScreen(navController)
+        }
+        composable(HomeRoutes.ProfileScreen.route)
+        {
+            ProfileScreen(navController)
+        }
+        composable(HomeRoutes.NavScreen.route)
+        {
+            NavScreen(navController)
         }
     }
 }

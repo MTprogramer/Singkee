@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -39,7 +39,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -47,8 +46,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import androidx.navigation.NavHostController
 import com.Singlee.forex.R
-import com.Singlee.forex.ui.theme.button_blue
 import com.Singlee.forex.ui.theme.extra_light
 import com.Singlee.forex.ui.theme.hintColor
 import com.Singlee.forex.ui.theme.sans
@@ -181,7 +180,7 @@ fun  BuildUserCardSlider(userData: List<PlanInfo>, points: List<List<String>>) {
 }
 
 @Composable
-fun PremiumPlan() {
+fun PremiumPlan(navController: NavHostController) {
     // Sample user data
     val prices = listOf(
         PlanInfo(price = "24.99"),
@@ -197,7 +196,7 @@ fun PremiumPlan() {
         Row (horizontalArrangement = Arrangement.End , modifier = Modifier
             .padding(start = 20.dp, end = 20.dp, top = 25.dp)
             .fillMaxWidth()){
-            toolbarButton(image = R.drawable.cross)
+            toolbarButton( Modifier.weight(1f), Alignment.CenterStart,image = R.drawable.cross) {}
         }
         InfoLayout()
         BuildUserCardSlider(userData = prices , points)
@@ -210,24 +209,27 @@ data class PlanInfo(val price: String)
 
 
 @Composable
-fun toolbarButton(image : Int)
+fun toolbarButton(modifier: Modifier, alignment: Alignment, image: Int, function: () -> Unit, )
 {
-    Button(
-        onClick = { },
-        modifier = Modifier
-            .border(1.dp, color = hintColor, shape = CircleShape)
-            .size(40.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-        contentPadding = PaddingValues(10.dp)
-    ) {
-        Image(
-            imageVector = ImageVector.vectorResource(id = image),
-            contentDescription = "",
+    Box(modifier = modifier , contentAlignment = alignment)
+    {
+        Button(
+            onClick = { },
             modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp),
-        contentScale = ContentScale.Fit)
+                .border(1.dp, color = hintColor, shape = CircleShape)
+                .size(40.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+            contentPadding = PaddingValues(10.dp)
+        ) {
+            Image(
+                imageVector = ImageVector.vectorResource(id = image),
+                contentDescription = "",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp),
+                contentScale = ContentScale.Fit)
 
+        }
     }
 }
 @Preview
@@ -271,9 +273,10 @@ fun InfoLayout()
 @Composable
 fun CircleIndicator(pagerState: PagerState, pageCount: Int) {
     Row(
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally)
     ) {
         repeat(pageCount) { page ->
             val color = if (pagerState.currentPage == page) {
@@ -325,7 +328,6 @@ fun pointsDesign(@PreviewParameter(point::class) value : String)
 
 }
 
-@Preview
 @Composable
 fun chosePlanBtn()
 {
@@ -349,5 +351,6 @@ fun chosePlanBtn()
             style = MaterialTheme.typography.titleMedium,
             color = Color.White
         )
+
     }
 }

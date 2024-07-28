@@ -122,7 +122,7 @@ fun header(title : String , dis : String , screenVis : Boolean)
 @Composable
 fun editext(hint: String, value: MutableState<String> , is_password:Boolean)
 {
-    var is_show = remember {
+    val is_show = remember {
         mutableStateOf(false)
     }
 

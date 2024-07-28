@@ -22,19 +22,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.Singlee.forex.DataModels.SignalData
 import com.Singlee.forex.R
+import com.Singlee.forex.graph.HomeRoutes
 import com.Singlee.forex.ui.theme.blue
 import com.Singlee.forex.ui.theme.duble_extra_light
 import com.Singlee.forex.ui.theme.hintColor
@@ -44,14 +41,6 @@ import com.Singlee.forex.ui.theme.signalType
 import com.Singlee.forex.ui.theme.signalValues
 import com.Singlee.forex.ui.theme.titleColor
 import com.Singlee.forex.ui.theme.upgradeGradient
-
-// Define a provider class for SignalData
-class SignalDataProvider : PreviewParameterProvider<SignalData> {
-    override val values = sequenceOf(
-        SignalData(false, false,2406.0, 2906.0, 2006.0, "AXUSD"),
-        SignalData(true, true,2406.0, 2906.0, 2006.0, "AXUSD")
-    )
-}
 
 
 @Composable
@@ -78,19 +67,18 @@ fun AllSignalScreen(navController: NavHostController)
         Text(
             text = "All Signals",
             style =MaterialTheme.typography.titleLarge,
-            modifier =  Modifier.padding(top = 25.dp , bottom = 20.dp)
+            modifier =  Modifier.padding(top = 25.dp , bottom = 10.dp)
         )
         LazyColumn {
-           items(list.size){2
-               signalDesign(data = list[it])
+           items(list.size){
+               signalDesign(data = list[it]) {navController.navigate(HomeRoutes.PremiumRoute.route)}
            }
         }
     }
 }
 
-@Preview(showBackground = true , backgroundColor = 0xFF15191F )
 @Composable
-fun signalDesign(@PreviewParameter(SignalDataProvider::class) data : SignalData)
+fun signalDesign(data: SignalData, function: () -> Unit)
 {
 
     Spacer(modifier = Modifier.height(15.dp))
@@ -135,7 +123,7 @@ fun signalDesign(@PreviewParameter(SignalDataProvider::class) data : SignalData)
                    modifier = Modifier.padding(start = 10.dp)
                )
                if (data.isPremium)
-                   upgradeBtn(upgradeGradient)
+                   upgradeBtn(upgradeGradient , function)
 
            }
            Row(Modifier.padding( top = 12.dp , bottom = 15.dp) , horizontalArrangement = Arrangement.SpaceBetween)
@@ -150,7 +138,7 @@ fun signalDesign(@PreviewParameter(SignalDataProvider::class) data : SignalData)
 }
 
 @Composable
-fun upgradeBtn(gradientColors: List<Color>)
+fun upgradeBtn(gradientColors: List<Color>, function: () -> Unit)
 {
     Row (
         Modifier
@@ -168,7 +156,7 @@ fun upgradeBtn(gradientColors: List<Color>)
                     shape = RoundedCornerShape(20.dp)
                 )
                 .padding(horizontal = 5.dp, vertical = 4.dp)
-                .clickable { },
+                .clickable (onClick = function),
             contentAlignment = Alignment.Center
         )
         {

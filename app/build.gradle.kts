@@ -79,6 +79,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.play.services.auth)
+    implementation ("com.google.accompanist:accompanist-swiperefresh:0.35.1-alpha")
+
+    implementation("androidx.compose.foundation:foundation:1.6.8") // Adjust version as needed
+
 //    implementation(libs.facebook.android.sdk)
 //    implementation("com.facebook.android:facebook-android-sdk:latest.release")
 

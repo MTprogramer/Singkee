@@ -8,13 +8,14 @@ import com.Singlee.forex.screens.Home.AllSignalScreen
 import com.Singlee.forex.screens.Home.ChatScreen
 import com.Singlee.forex.screens.Home.PremiumPlan
 import com.Singlee.forex.screens.Home.ProfileScreen
+import com.Singlee.forex.screens.Home.ProfileSettingScreen
 import com.Singlee.forex.screens.Home.ReportScreen
 import com.Singlee.forex.screens.Home.StartChat
-import com.Singlee.forex.screens.NavScreen
+import com.Singlee.forex.screens.Home.nav.NavScreen
 
 fun NavGraphBuilder.homeNav(navController: NavHostController)
 {
-    navigation(startDestination = HomeRoutes.NavScreen.route , route = NavRouts.AppRoute.route)
+    navigation(startDestination = HomeRoutes.ProfileSettingScreen.route , route = NavRouts.AppRoute.route)
     {
         composable(HomeRoutes.HomeRoute.route)
         {
@@ -43,6 +44,10 @@ fun NavGraphBuilder.homeNav(navController: NavHostController)
         composable(HomeRoutes.NavScreen.route)
         {
             NavScreen(navController)
+        }
+        composable(HomeRoutes.ProfileSettingScreen.route)
+        {
+            ProfileSettingScreen()
         }
     }
 }

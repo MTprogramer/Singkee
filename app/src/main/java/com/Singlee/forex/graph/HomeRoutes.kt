@@ -9,6 +9,7 @@ sealed class HomeRoutes {
     data object ReportScreen : NavRouts("reportScreen")
     data object ProfileScreen : NavRouts("ProfileScreen")
     data object NavScreen : NavRouts("NavScreen")
+    data object ProfileSettingScreen : NavRouts("ProfileSettingScreen")
 //    data object RegisterRoute : NavRouts("register")
 //    data object ForgetPassRoute : NavRouts("forgetPass")
 //    data object OTPRoute : NavRouts("otp")

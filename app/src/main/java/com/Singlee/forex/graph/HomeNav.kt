@@ -4,18 +4,21 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.Singlee.forex.screens.Home.AboutSinglee
 import com.Singlee.forex.screens.Home.AllSignalScreen
 import com.Singlee.forex.screens.Home.ChatScreen
 import com.Singlee.forex.screens.Home.PremiumPlan
+import com.Singlee.forex.screens.Home.PrivacyPolicy
 import com.Singlee.forex.screens.Home.ProfileScreen
 import com.Singlee.forex.screens.Home.ProfileSettingScreen
 import com.Singlee.forex.screens.Home.ReportScreen
 import com.Singlee.forex.screens.Home.StartChat
 import com.Singlee.forex.screens.Home.nav.NavScreen
+import com.Singlee.forex.screens.Home.nav.Prefrences
 
 fun NavGraphBuilder.homeNav(navController: NavHostController)
 {
-    navigation(startDestination = HomeRoutes.ProfileSettingScreen.route , route = NavRouts.AppRoute.route)
+    navigation(startDestination = HomeRoutes.PrivacyPolicy.route , route = NavRouts.AppRoute.route)
     {
         composable(HomeRoutes.HomeRoute.route)
         {
@@ -48,6 +51,18 @@ fun NavGraphBuilder.homeNav(navController: NavHostController)
         composable(HomeRoutes.ProfileSettingScreen.route)
         {
             ProfileSettingScreen()
+        }
+        composable(HomeRoutes.PreferencesScreen.route)
+        {
+            Prefrences()
+        }
+        composable(HomeRoutes.AboutSinglee.route)
+        {
+            AboutSinglee()
+        }
+        composable(HomeRoutes.PrivacyPolicy.route)
+        {
+            PrivacyPolicy()
         }
     }
 }

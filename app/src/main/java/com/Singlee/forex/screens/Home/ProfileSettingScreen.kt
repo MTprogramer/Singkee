@@ -19,16 +19,16 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,7 +54,8 @@ fun ProfileSettingScreen()
     val password = remember {mutableStateOf("")}
 
     Column(Modifier.padding(horizontal = 20.dp , vertical = 25.dp)) {
-        ProfileToolbar()
+        ProfileToolbar("Profile Edit"){}
+        Spacer(modifier = Modifier.height(20.dp))
         CircularImageView()
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -84,7 +85,7 @@ fun textField(isPassword: Boolean, title: String, value: MutableState<String> , 
 {
 
     val isShow = remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
 
@@ -96,19 +97,19 @@ fun textField(isPassword: Boolean, title: String, value: MutableState<String> , 
             .fillMaxWidth(),
         label = { Text(title) },
         colors = TextFieldDefaults.colors(unfocusedContainerColor = duble_extra_light , unfocusedLabelColor = titleColor),
-        placeholder = { Text("Please Enter Your $title") },
         trailingIcon = {
             if (isPassword)
             {
                 TextButton(onClick = { isShow.value = !isShow.value}) {
                     Text(
-                        text = if (isShow.value) "Hide" else "Show",
+                        text = if (!isShow.value) "Hide" else "Show",
                         color = titleColor,
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
             }
         },
+        visualTransformation = if (!isShow.value) VisualTransformation.None else PasswordVisualTransformation()
     )
     if (onError)
     {
@@ -146,7 +147,7 @@ fun CircularImageView() {
 }
 
 @Composable
-fun ProfileToolbar()
+fun ProfileToolbar(title: String, onBack: () -> Unit)
 {
     Box(
         Modifier
@@ -157,9 +158,9 @@ fun ProfileToolbar()
             Modifier.align(Alignment.CenterStart),
             Alignment.CenterStart,
             image = R.drawable.back_icon,
-            function = {})
+            function = {onBack})
         Text(
-            text = "Profile",
+            text = title,
             style =MaterialTheme.typography.titleLarge,
             modifier = Modifier
                 .fillMaxWidth()

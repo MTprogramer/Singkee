@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.Singlee.forex.R
+import com.Singlee.forex.graph.HomeRoutes
 import com.Singlee.forex.ui.theme.duble_extra_light
 import com.Singlee.forex.ui.theme.extra_light
 import com.Singlee.forex.ui.theme.red
@@ -41,8 +42,8 @@ fun ProfileScreen(navController: NavHostController)
         logput()
         AvtarDesign()
         Spacer(modifier = Modifier.height(5.dp))
-        itemBox(title = "My Profile", dis = "Your profile and personal information", icon =R.drawable.profile_icon) {}
-        itemBox(title = "Preferences", dis = "Settings and configurations", icon =R.drawable.prefrences_icon,){}
+        itemBox(title = "My Profile", dis = "Your profile and personal information", icon =R.drawable.profile_icon) {navController.navigate(HomeRoutes.ProfileSettingScreen.route)}
+        itemBox(title = "Preferences", dis = "Settings and configurations", icon =R.drawable.prefrences_icon,){navController.navigate(HomeRoutes.PreferencesScreen.route)}
         itemBox(title = "Privacy policy", dis = "Read Our Terms Privacy Policy", icon =R.drawable.privacy_policy_icon,){}
         itemBox(title = "About", dis = "About “Singlee App”", icon =R.drawable.about_icon,){}
         itemBox(title = "Contact us", dis = "If you have any query contact “Singlee”", icon =R.drawable.contectus_icon,){}
@@ -129,7 +130,7 @@ fun itemBox(title: String, dis: String, icon: Int, function: () -> Unit)
 {
     Spacer(modifier = Modifier.height(10.dp))
     Box(modifier = Modifier
-        .clickable { function }
+        .clickable { function.invoke() }
         .fillMaxWidth()
         .height(height = 72.dp)
         .background(

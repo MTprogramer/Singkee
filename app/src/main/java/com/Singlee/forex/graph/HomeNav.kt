@@ -12,13 +12,14 @@ import com.Singlee.forex.screens.Home.PrivacyPolicy
 import com.Singlee.forex.screens.Home.ProfileScreen
 import com.Singlee.forex.screens.Home.ProfileSettingScreen
 import com.Singlee.forex.screens.Home.ReportScreen
+import com.Singlee.forex.screens.Home.SignalDetail
 import com.Singlee.forex.screens.Home.StartChat
 import com.Singlee.forex.screens.Home.nav.NavScreen
 import com.Singlee.forex.screens.Home.nav.Prefrences
 
 fun NavGraphBuilder.homeNav(navController: NavHostController)
 {
-    navigation(startDestination = HomeRoutes.PrivacyPolicy.route , route = NavRouts.AppRoute.route)
+    navigation(startDestination = HomeRoutes.NavScreen.route , route = NavRouts.AppRoute.route)
     {
         composable(HomeRoutes.HomeRoute.route)
         {
@@ -34,7 +35,7 @@ fun NavGraphBuilder.homeNav(navController: NavHostController)
         }
         composable(HomeRoutes.ChatScreenRoute.route)
         {
-            ChatScreen(navController)
+            ChatScreen()
         }
         composable(HomeRoutes.ReportScreen.route)
         {
@@ -63,6 +64,10 @@ fun NavGraphBuilder.homeNav(navController: NavHostController)
         composable(HomeRoutes.PrivacyPolicy.route)
         {
             PrivacyPolicy()
+        }
+        composable(HomeRoutes.SignalDetail.route)
+        {
+            SignalDetail()
         }
     }
 }

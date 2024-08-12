@@ -71,14 +71,17 @@ fun AllSignalScreen(navController: NavHostController)
         )
         LazyColumn {
            items(list.size){
-               signalDesign(data = list[it]) {navController.navigate(HomeRoutes.PremiumRoute.route)}
+               signalDesign(data = list[it],{navController.navigate(HomeRoutes.PremiumRoute.route)})
+               {
+                   navController.navigate(HomeRoutes.SignalDetail.route)
+               }
            }
         }
     }
 }
 
 @Composable
-fun signalDesign(data: SignalData, function: () -> Unit)
+private fun signalDesign(data: SignalData, function: () -> Unit , itemClick : () -> Unit)
 {
 
     Spacer(modifier = Modifier.height(15.dp))
@@ -87,6 +90,7 @@ fun signalDesign(data: SignalData, function: () -> Unit)
             .fillMaxWidth()
             .wrapContentHeight()
             .background(duble_extra_light, shape = RoundedCornerShape(10.dp))
+            .clickable { if (data.isPremium) function.invoke() else itemClick.invoke() }
     )
     {
        Column {
@@ -138,7 +142,7 @@ fun signalDesign(data: SignalData, function: () -> Unit)
 }
 
 @Composable
-fun upgradeBtn(gradientColors: List<Color>, function: () -> Unit)
+private fun upgradeBtn(gradientColors: List<Color>, function: () -> Unit)
 {
     Row (
         Modifier
@@ -186,7 +190,7 @@ fun upgradeBtn(gradientColors: List<Color>, function: () -> Unit)
 
 
     @Composable
-    fun signalValueDesign(tyoe: String, value: Double, modifier: Modifier, premium: Boolean)
+  private  fun signalValueDesign(tyoe: String, value: Double, modifier: Modifier, premium: Boolean)
     {
         Column(horizontalAlignment = Alignment.CenterHorizontally , modifier = modifier ) {
             Text(

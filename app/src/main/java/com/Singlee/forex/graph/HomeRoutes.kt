@@ -13,6 +13,7 @@ sealed class HomeRoutes {
     data object PreferencesScreen : NavRouts("PreferencesScreen")
     data object AboutSinglee : NavRouts("AboutSinglee")
     data object PrivacyPolicy : NavRouts("PrivacyPolicy")
+    data object SignalDetail : NavRouts("SignalDetail")
 //    data object RegisterRoute : NavRouts("register")
 //    data object ForgetPassRoute : NavRouts("forgetPass")
 //    data object OTPRoute : NavRouts("otp")

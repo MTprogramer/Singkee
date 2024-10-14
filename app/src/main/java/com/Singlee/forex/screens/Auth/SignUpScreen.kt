@@ -107,10 +107,7 @@ fun signUpScreen(navController: NavController, authViewModel: AuthViewModel)
             }
             is Response.Success -> {
                 isLoading.value = false
-                Log.d(
-                    "status",
-                    "suceess + ${(result as Response.Success<AuthResult>).data.user?.email}"
-                )
+                Log.d("status", "suceess + ${(result as Response.Success<AuthResult>).data.user?.email}")
             }
             is Response.Error -> {
                 isLoading.value = false

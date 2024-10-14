@@ -5,6 +5,7 @@ import android.util.Log
 import com.Singlee.forex.DataModels.UserData
 import com.Singlee.forex.Repo.Response
 import com.Singlee.forex.Repo.safeApiCall
+import com.Singlee.forex.Utils.SharedPrefs
 import com.Singlee.forex.Utils.welcomeEmail
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor (
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val context: Context
+    private val context: Context,
+    private val sharedPrefs: SharedPrefs
 ): AuthRepository {
 
     override fun loginUser(email: String, password: String): Flow<Response<AuthResult>> {
@@ -40,9 +42,9 @@ class AuthRepositoryImpl @Inject constructor (
                val result = firebaseAuth.createUserWithEmailAndPassword(email,password).await()
                val user  = result.user!!
 
-
                val userData = UserData(name , email, password , user.uid, "https://firebasestorage.googleapis.com/v0/b/singlee-18637.appspot.com/o/Profile.png?alt=media&token=b2d51bac-4d56-4e0c-b436-af5a3002b4b7",false )
                createUser(user.uid , userData)
+               sharedPrefs.saveUser(userData)
 
                welcomeEmail(email)
 

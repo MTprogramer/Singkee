@@ -1,11 +1,14 @@
 package com.Singlee.forex.screens.Home.nav
 
 import android.util.Log
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.Singlee.forex.graph.HomeRoutes
 import com.Singlee.forex.screens.Home.AllSignalScreen

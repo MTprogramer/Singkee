@@ -29,6 +29,8 @@ import com.Singlee.forex.Repo.Response
 import com.Singlee.forex.Utils.Constant
 import com.Singlee.forex.Utils.isValidEmail
 import com.Singlee.forex.graph.AuthRouts
+import com.Singlee.forex.graph.HomeRoutes
+import com.Singlee.forex.graph.NavRouts
 import com.Singlee.forex.ui.theme.mediumHint
 
 @Composable
@@ -67,6 +69,11 @@ fun loginScreen(
                 isLoading.value = false
                 val user = (result as Response.Success<UserData>).data
                 Log.d("status", "Success: ${user.email}")
+
+                navController.navigate(NavRouts.AppRoute.route) {
+                    // Clear the back stack to prevent the user from returning to the login screen
+                    popUpTo(NavRouts.AuthRoute.route) { inclusive = true }
+                }
             }
             is Response.Error -> {
                 isLoading.value = false

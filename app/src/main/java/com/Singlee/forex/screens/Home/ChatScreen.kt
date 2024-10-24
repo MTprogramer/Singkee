@@ -1,5 +1,6 @@
     package com.Singlee.forex.screens.Home
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,25 +17,35 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -42,77 +53,145 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.Singlee.forex.DataModels.Message
 import com.Singlee.forex.R
+import com.Singlee.forex.Repo.Response
+import com.Singlee.forex.Utils.Constant
+import com.Singlee.forex.screens.Home.ViewModels.ChatViewModel
 import com.Singlee.forex.ui.theme.blue
 import com.Singlee.forex.ui.theme.duble_extra_light
 import com.Singlee.forex.ui.theme.editextbg
-import com.Singlee.forex.ui.theme.extra_light
 import com.Singlee.forex.ui.theme.focusEditextbg
 import com.Singlee.forex.ui.theme.sans
 import com.Singlee.forex.ui.theme.statusBar
 import com.Singlee.forex.ui.theme.titleColor
 import com.Singlee.forex.ui.theme.white
-    
-    
+import kotlinx.coroutines.delay
+import java.util.UUID
 
-    val messages = mutableListOf(
-        Message("1","hello " , "k",""),
-        Message("1","kia hall chal ha " , "k",""),
-        Message("1","ty ki kari ja ry o " , "k",""),
-        Message("2","mai theek tu suna " , "k",""),
-        Message("2","ki kar ria aj kal " , "k",""),
-        Message("2","sab wadia " , "k","")
-    )
 
-    @Preview
     @Composable
-fun ChatScreen()
+fun ChatScreen(messageViewModel: ChatViewModel)
 {
+    val messagesState by messageViewModel.messages.collectAsState(initial = Response.Empty)
+    val update by messageViewModel.update.collectAsState(initial = Response.Empty)
+    val messages = remember { mutableStateListOf<Message>()}
+    val listState = rememberLazyListState()
+    LaunchedEffect(Unit)
+    {
+        messageViewModel.getMessages()
+    }
+
+    // Update the scroll when new messages are added
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.size - 1)
+        }
+    }
+
+    LaunchedEffect(messagesState) {
+        when (messagesState) {
+            Response.Empty -> {
+            }
+            is Response.Error -> {
+                Log.e("ChatScreen", "Error fetching messages: ${(messagesState as Response.Error).message}")
+                // Handle error state (optional)
+            }
+            Response.Loading -> {
+                Log.d("ChatScreen", "Loading messages...")
+                // Handle loading state (optional)
+            }
+            is Response.Success -> {
+                val newMessages = (messagesState as Response.Success).data
+
+                messages.clear()
+                messages.addAll(newMessages)
+
+            }
+        }
+    }
+    LaunchedEffect(update) {
+        when (update) {
+            Response.Empty -> {
+            }
+            is Response.Error -> {
+                Log.e("ChatScreen", "Error fetching messages: ${(update as Response.Error).message}")
+                // Handle error state (optional)
+            }
+            Response.Loading -> {
+                Log.d("ChatScreen", "Loading messages...")
+                // Handle loading state (optional)
+            }
+            is Response.Success -> {
+//                messages.clear()
+                Log.d("ChatScreen", "Messages upload successfully: $messages")
+                // Handle successful state (optional)
+            }
+        }
+    }
 
   Box(Modifier.padding(start = 20.dp , end = 20.dp , top = 20.dp , bottom = 15.dp)){
-      Column(Modifier.verticalScroll(rememberScrollState())) {
+      Column() {
           ChatToolbar()
+
 
           Spacer(modifier = Modifier.height(20.dp))
 
-          messages.forEachIndexed{index, message ->
-              if (message.id != "2")
-              {
-                  if (index != 0)
-                  {
-                      if ( messages[index - 1].id != message.id)
-                          oppositeReply(true , message)
-                      else
-                          oppositeReply(isShowProfile = false, message = message )
+          LazyColumn (
+              Modifier
+                  .padding(bottom = 75.dp)
+                  .weight(1f)
+                  .imePadding() , state = listState){
+              itemsIndexed(messages) { index, message ->
+                  if (message.senderId != Constant.userID) {
+                      // Handle messages from the opposite sender
+                      if (index != 0) {
+                          // Check if the previous message is different
+                          if (messages[index - 1].senderId != message.senderId) {
+                              oppositeReply(isShowProfile = true, message = message)
+                          } else {
+                              oppositeReply(isShowProfile = false, message = message)
+                          }
+                      } else {
+                          oppositeReply(isShowProfile = true, message = message) // First message
+                      }
+                  } else {
+                      // Handle messages from the current user
+                      if (index < messages.size - 1) {
+                          // Check if the next message is different
+                          if (messages[index + 1].senderId != message.senderId) {
+                              ReplyMessage( false, message = message)
+                          } else {
+                              ReplyMessage(true, message = message)
+                          }
+                      } else {
+                          ReplyMessage(false, message = message) // Last message
+                      }
                   }
-                  else
-                      oppositeReply(isShowProfile = true, message = message )
-              }
-              else
-              {
-                  if (index < messages.size-1)
-                  {
-                      if (messages[index + 1].id != message.id)
-                          ReplyMessage(false , message)
-                      else
-                          ReplyMessage( true, message )
-                  }
-                  else
-                      ReplyMessage( false, message )
               }
           }
       }
+
       replyFeild()
+      {
+          messages.add(it)
+          messageViewModel.sendMessage(it)
+      }
   }
 
 
 }
 
     @Composable
-    fun replyFeild() {
-        Box(
+ fun replyFeild(onReply : (Message)-> Unit)
+ {
+
+     val keyboardController = LocalSoftwareKeyboardController.current
+     val focusManager = LocalFocusManager.current // Get the focus manager
+
+     var isSending by remember { mutableStateOf(false) }
+
+     Box(
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding()
@@ -155,13 +234,26 @@ fun ChatScreen()
                Box(
                    modifier = Modifier
                        .size(50.dp)
-                       .clickable {
-                           if (value.value.isNotEmpty()) messages.add(
-                               Message(
-                                   "1",
-                                   value.value
+                       .clickable (enabled = !isSending){
+                           if (value.value.isNotEmpty()) {
+                               isSending = true // Start sending
+                               val messageId = UUID
+                                   .randomUUID()
+                                   .toString()
+                               onReply(
+                                   Message(
+                                       senderId = Constant.userID ?: "",
+                                       content = value.value,
+                                       messageId = messageId
+                                   )
                                )
-                           )
+                               value.value = ""
+                               focusManager.clearFocus()
+                               keyboardController?.hide()  // Hide the keyboard
+
+
+                           }
+
                        }
                        .background(blue, CircleShape),
                    contentAlignment = Alignment.Center
@@ -176,7 +268,13 @@ fun ChatScreen()
 
            }
         }
-    }
+     if (isSending) {
+         LaunchedEffect(Unit) {
+             delay(200) // Adjust the delay as necessary
+             isSending = false
+         }
+     }
+ }
 
 @Composable
 @Preview
@@ -264,7 +362,7 @@ fun title(weight: Modifier)
 @Composable
 fun oppositeReply(isShowProfile : Boolean, message: Message)
 {
-    val radius = if (isShowProfile) 0f else 50f
+    val radius = if (isShowProfile) 0f else 30f
     Spacer(modifier = Modifier.height(5.dp))
 
     Row {
@@ -291,9 +389,9 @@ fun oppositeReply(isShowProfile : Boolean, message: Message)
                 duble_extra_light,
                 RoundedCornerShape(
                     topStart = radius,
-                    topEnd = 50f,
-                    bottomStart = 50f,
-                    bottomEnd = 50f,
+                    topEnd = 30f,
+                    bottomStart = 30f,
+                    bottomEnd = 30f,
                 )
             )
         )
@@ -315,33 +413,44 @@ fun oppositeReply(isShowProfile : Boolean, message: Message)
 fun ReplyMessage(isLast: Boolean, message: Message)
 {
     Spacer(modifier = Modifier.height(5.dp))
-    val radius = if(!isLast) 0f else 50f
+    val radius = if(!isLast) 0f else 30f
 
      Box(contentAlignment = Alignment.CenterEnd , modifier = Modifier
          .fillMaxWidth()
          .padding(start = 20.dp))
     {
-        Box(modifier = Modifier
-            .background(
-                blue,
-                RoundedCornerShape(
-                    topStart = 50f ,
-                    topEnd = 50f,
-                    bottomStart = 50f,
-                    bottomEnd = radius,
-                )
-            )
-        )
-        {
-            Text(
-                text = message.content,
-                fontFamily = sans,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                color = white,
-                letterSpacing = 1.sp,
-                modifier = Modifier.padding(horizontal = 10.dp , vertical = 15.dp)
-            )
-        }
+         Row {
+             if (!message.isSent){
+             CircularProgressIndicator(
+                 modifier = Modifier
+                     .size(24.dp) // Adjust size as needed
+                     .align(Alignment.CenterVertically),
+                 color = Color.Gray
+             )
+             }
+             Box(
+                 modifier = Modifier
+                     .background(
+                         blue,
+                         RoundedCornerShape(
+                             topStart = 30f,
+                             topEnd = 30f,
+                             bottomStart = 30f,
+                             bottomEnd = radius,
+                         )
+                     )
+             )
+             {
+                 Text(
+                     text = message.content,
+                     fontFamily = sans,
+                     fontSize = 14.sp,
+                     fontWeight = FontWeight.Normal,
+                     color = white,
+                     letterSpacing = 1.sp,
+                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 15.dp)
+                 )
+             }
+         }
     }
 }

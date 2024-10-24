@@ -1,9 +1,13 @@
 package com.Singlee.forex.DataModels
 
+import com.google.firebase.firestore.PropertyName
+
 data class Message(
-    val id: String = "",
+    val messageId: String = "",
     val content: String = "",
     val senderId: String = "",
     val profileImage : String = "",
-    val timestamp: Long = System.currentTimeMillis()
+    @PropertyName("media_linked") val isMedia_linked : Boolean = false,
+    @PropertyName("sent") val isSent : Boolean = false,
+    val timestamp: Long = com.google.firebase.Timestamp.now().seconds
 )

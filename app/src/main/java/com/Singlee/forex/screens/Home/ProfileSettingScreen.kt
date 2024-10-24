@@ -1,5 +1,6 @@
 package com.Singlee.forex.screens.Home
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,7 +19,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,28 +34,81 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.Singlee.forex.DataModels.UserData
 import com.Singlee.forex.R
+import com.Singlee.forex.Repo.Response
 import com.Singlee.forex.screens.Auth.button
+import com.Singlee.forex.screens.Home.ViewModels.UserViewModel
 import com.Singlee.forex.ui.theme.duble_extra_light
 import com.Singlee.forex.ui.theme.errorStyle
 import com.Singlee.forex.ui.theme.titleColor
 
-@Preview
 @Composable
-fun ProfileSettingScreen()
+fun ProfileSettingScreen(userViewModel: UserViewModel)
 {
 
+    val data by userViewModel.userDataresult.collectAsState(initial = Response.Empty)
+    val update by userViewModel.userDataUpdate.collectAsState(initial = Response.Empty)
     val btnState = remember { mutableStateOf(false)}
     val isLoading = remember { mutableStateOf(false)}
 
     val emailValidation = remember { mutableStateOf(false)}
     val passwordValidation = remember { mutableStateOf(false)}
+    val isThirdyParty = remember { mutableStateOf(false)}
 
     val name = remember {mutableStateOf("")}
     val email = remember {mutableStateOf("")}
     val password = remember {mutableStateOf("")}
+
+    var user : UserData ? = null
+
+    if (isThirdyParty.value)
+        btnState.value = name.value.isNotEmpty() && user != null
+    else
+        btnState.value = name.value.isNotEmpty() && password.value.isNotEmpty() && user != null
+
+
+    userViewModel.getUserData()
+
+
+    LaunchedEffect(data) {
+        when (data) {
+            is Response.Loading -> { Log.d("status", "Loading") }
+            is Response.Success -> {
+                user = (data as Response.Success<UserData>).data
+                user?.let {
+                    name.value = it.name
+                    email.value = it.email
+                    password.value = it.password
+                    Log.d("status", "Success: ${it.email}")
+                }
+
+            }
+            is Response.Error -> { Log.d("error", (data as Response.Error).message) }
+            Response.Empty -> { Log.d("status", "Empty response") }
+        }
+    }
+
+
+    LaunchedEffect(update) {
+        when (data) {
+            is Response.Loading -> {
+                isLoading.value = true
+                Log.d("status", "Loading")
+            }
+            is Response.Success -> {
+                isLoading.value = false
+                Log.d("status", "Success: ${update}")
+            }
+            is Response.Error -> {
+                isLoading.value = false
+                Log.d("error", (data as Response.Error).message)
+            }
+            Response.Empty -> { Log.d("status", "Empty response") }
+        }
+    }
+
 
     Column(Modifier.padding(horizontal = 20.dp , vertical = 25.dp)) {
         ProfileToolbar("Profile Edit"){}
@@ -60,28 +117,26 @@ fun ProfileSettingScreen()
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        textField(false , "Name" , name , false ,"")
-        textField(false , "Email" , email , emailValidation.value,"Email not valid")
-        textField(true , "Password" , password , passwordValidation.value , "Password")
+        textField(false , "Name" , name , false ,"" , true)
+        textField(false , "Email" , email , emailValidation.value,"Email not valid" , false)
+        if (!isThirdyParty.value)
+            textField(true , "Password" , password , passwordValidation.value , "Password" , true)
 
         Spacer(modifier = Modifier.height(30.dp))
         Box(modifier = Modifier.fillMaxWidth() , contentAlignment = Alignment.Center)
         {
-
             button(
-                title = "Sign in" ,
+                title = "Update" ,
                 btnState.value ,
-                button = {}  ,
+                button = {userViewModel.updateUserData(userData = user!!)}  ,
                 isLoading = isLoading.value)
         }
-
-
     }
 }
 
 
 @Composable
-fun textField(isPassword: Boolean, title: String, value: MutableState<String> , onError: Boolean , info : String)
+fun textField(isPassword: Boolean, title: String, value: MutableState<String> , onError: Boolean , info : String , enabled : Boolean )
 {
 
     val isShow = remember {
@@ -109,6 +164,7 @@ fun textField(isPassword: Boolean, title: String, value: MutableState<String> , 
                 }
             }
         },
+        enabled = enabled,
         visualTransformation = if (!isShow.value) VisualTransformation.None else PasswordVisualTransformation()
     )
     if (onError)

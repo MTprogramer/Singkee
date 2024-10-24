@@ -4,12 +4,17 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.Singlee.forex.Repo.Auth.AuthRepository
 import com.Singlee.forex.Repo.Auth.AuthRepositoryImpl
+import com.Singlee.forex.Repo.Messages.MessageRepo
+import com.Singlee.forex.Repo.Messages.MessageRepoImp
+import com.Singlee.forex.Repo.Signal.SignalRepoImp
+import com.Singlee.forex.Repo.Signal.SignalsRepo
 import com.Singlee.forex.Repo.User.UserRepo
 import com.Singlee.forex.Repo.User.UserRepoImpl
 import com.Singlee.forex.Utils.SharedPrefs
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,7 +47,25 @@ object AppModule
 
     @Provides
     @Singleton
-    fun provideFireStore() = FirebaseFirestore.getInstance()
+    fun signalRepoImp(firebaseFirestore: FirebaseFirestore , @ApplicationContext context: Context , sharedPrefs: SharedPrefs) : SignalsRepo
+    {
+        return SignalRepoImp(context , firebaseFirestore , sharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun messageRepoImp(firebaseFirestore: FirebaseFirestore , @ApplicationContext context: Context , sharedPrefs: SharedPrefs) : MessageRepo
+    {
+        return MessageRepoImp(context , firebaseFirestore , sharedPrefs)
+    }
+
+     @Provides
+    @Singleton
+    fun provideFireStore() =  FirebaseFirestore.getInstance().apply {
+         val settings = FirebaseFirestoreSettings.Builder()
+             .build()
+         firestoreSettings = settings
+     }
 
     @Provides
     @Singleton
@@ -53,8 +76,8 @@ object AppModule
 
     @Provides
     @Singleton
-    fun userRepoImp(firebaseAuth: FirebaseAuth , firebaseFirestore: FirebaseFirestore , @ApplicationContext context: Context) : UserRepo
+    fun userRepoImp(firebaseAuth: FirebaseAuth , firebaseFirestore: FirebaseFirestore , @ApplicationContext context: Context , sharedPrefs: SharedPrefs) : UserRepo
     {
-        return UserRepoImpl(firebaseAuth , firebaseFirestore ,context)
+        return UserRepoImpl(firebaseAuth , firebaseFirestore ,context , sharedPrefs)
     }
 }

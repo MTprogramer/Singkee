@@ -1,6 +1,6 @@
-package com.Singlee.forex.screens.Home.nav
+package com.Singlee.forex.screens.Home
 
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +21,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,23 +30,62 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.Singlee.forex.screens.Home.ProfileToolbar
+import com.Singlee.forex.DataModels.SettingData
+import com.Singlee.forex.Repo.Response
+import com.Singlee.forex.screens.Home.ViewModels.UserViewModel
 import com.Singlee.forex.ui.theme.button_blue
 import com.Singlee.forex.ui.theme.duble_extra_light
 import com.Singlee.forex.ui.theme.extra_light
 import com.Singlee.forex.ui.theme.titleColor
 
 
-@Preview
 @Composable
-fun Prefrences()
+fun Prefrences(userViewModel: UserViewModel)
 {
+
+    val settingData by userViewModel.profileSetting.collectAsState(initial = Response.Empty)
+    val settingUpdate by userViewModel.userDataUpdate.collectAsState(initial = Response.Empty)
+    userViewModel.getSettingData()
+
+    val data = remember {mutableStateOf(SettingData())}
+
+    LaunchedEffect(settingData)
+    {
+        when(settingData)
+        {
+            Response.Empty -> TODO()
+            is Response.Error -> TODO()
+            Response.Loading -> TODO()
+            is Response.Success -> {
+                data.value = (settingData as Response.Success<SettingData>).data
+            }
+        }
+    }
+
+    LaunchedEffect(settingUpdate) {
+        when(settingUpdate){
+            Response.Empty -> TODO()
+            is Response.Error ->{
+                Log.d("updateSetting", (settingUpdate as Response.Error).message)
+            }
+            Response.Loading -> TODO()
+            is Response.Success -> {
+                Log.d("updateSetting","success")
+            }
+        }
+    }
+
+
+
+    // Reusable function to handle switch changes
+    val onSwitchChange: (SettingData, (SettingData) -> SettingData) -> Unit = { setting, update ->
+        val updatedSetting = update(setting)
+        data.value = updatedSetting
+        userViewModel.updateSettingData(updatedSetting)
+    }
+
     Column(Modifier.padding(horizontal = 20.dp , vertical = 25.dp)) {
 
         ProfileToolbar("Preferences"){}
@@ -56,12 +97,24 @@ fun Prefrences()
             modifier = Modifier.padding(vertical = 20.dp),
             color = titleColor
         )
-
-        itemBox("Chat Notification" , "enable to see chat messages notification",false){}
-        itemBox("Support Notification" , "enable to see support notification",false){}
-        itemBox("Progress Notification" , "enable to see progress notifications",false){}
-        itemBox("Offers Notification" , "enable to see offers notifications",false){}
-        itemBox("Team Messages" , "enable to see singlee team notifications",false){}
+        itemBox("New Signal", "Enable to see new signal notifications", data.value.signal) { res ->
+            onSwitchChange(data.value) { it.copy(signal = res) }
+        }
+        itemBox("Chat Notification", "Enable to see chat messages notifications", data.value.chat_Notifications) {res ->
+            onSwitchChange(data.value) { it.copy(chat_Notifications = res) }
+        }
+        itemBox("Support Notification", "Enable to see support notifications", data.value.support_Notifications) {res ->
+            onSwitchChange(data.value) { it.copy(support_Notifications = res) }
+        }
+        itemBox("Progress Notification", "Enable to see progress notifications", data.value.progress_Notifications) {res ->
+            onSwitchChange(data.value) { it.copy(progress_Notifications = res) }
+        }
+        itemBox("Offers Notification", "Enable to see offers notifications", data.value.offer_Notifications) {res ->
+            onSwitchChange(data.value) { it.copy(offer_Notifications = res) }
+        }
+        itemBox("Team Messages", "Enable to see team messages notifications", data.value.team_Notifications) {res ->
+            onSwitchChange(data.value) { it.copy(team_Notifications = res) }
+        }
     }
 }
 
@@ -80,7 +133,9 @@ fun itemBox(title:String , des : String , isEnabled : Boolean , onActive :(Boole
         contentAlignment = Alignment.CenterStart
     )
     {
-        Row(verticalAlignment = Alignment.CenterVertically  , modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically  , modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)) {
             Column(Modifier.weight(1f)) {
                 Text(
                     text = title,
@@ -108,7 +163,6 @@ fun CustomSwitch(
     enable : Boolean,
     onCheckedChanged: (checked: Boolean) -> Unit
 ) {
-
     var isEnable by remember {mutableStateOf(enable)}
 
     Card(
@@ -148,9 +202,6 @@ fun CustomSwitch(
                         .background(titleColor, shape = CircleShape))
                 }
             }
-
         }
     }
-
-
 }

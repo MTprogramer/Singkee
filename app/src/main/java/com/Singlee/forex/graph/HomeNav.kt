@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.Singlee.forex.screens.Auth.AuthViewModel
 import com.Singlee.forex.screens.Home.AboutSinglee
 import com.Singlee.forex.screens.Home.AllSignalScreen
 import com.Singlee.forex.screens.Home.ChatScreen
@@ -14,16 +15,25 @@ import com.Singlee.forex.screens.Home.ProfileSettingScreen
 import com.Singlee.forex.screens.Home.ReportScreen
 import com.Singlee.forex.screens.Home.SignalDetail
 import com.Singlee.forex.screens.Home.StartChat
+import com.Singlee.forex.screens.Home.ViewModels.UserViewModel
 import com.Singlee.forex.screens.Home.nav.NavScreen
-import com.Singlee.forex.screens.Home.nav.Prefrences
+import com.Singlee.forex.screens.Home.Prefrences
+import com.Singlee.forex.screens.Home.ViewModels.ChatViewModel
+import com.Singlee.forex.screens.Home.ViewModels.SignalVideoModel
 
-fun NavGraphBuilder.homeNav(navController: NavHostController)
+fun NavGraphBuilder.homeNav(
+    navController: NavHostController,
+    authViewModel: AuthViewModel,
+    userViewModel: UserViewModel,
+    signalViewModel: SignalVideoModel,
+    messageViewModel: ChatViewModel
+)
 {
     navigation(startDestination = HomeRoutes.NavScreen.route , route = NavRouts.AppRoute.route)
     {
         composable(HomeRoutes.HomeRoute.route)
         {
-            AllSignalScreen(navController)
+            AllSignalScreen(navController , signalViewModel)
         }
         composable(HomeRoutes.PremiumRoute.route)
         {
@@ -35,27 +45,27 @@ fun NavGraphBuilder.homeNav(navController: NavHostController)
         }
         composable(HomeRoutes.ChatScreenRoute.route)
         {
-            ChatScreen()
+            ChatScreen(messageViewModel)
         }
         composable(HomeRoutes.ReportScreen.route)
         {
-            ReportScreen(navController)
+            ReportScreen(navController , signalViewModel)
         }
         composable(HomeRoutes.ProfileScreen.route)
         {
-            ProfileScreen(navController)
+            ProfileScreen(navController , userViewModel)
         }
         composable(HomeRoutes.NavScreen.route)
         {
-            NavScreen(navController)
+            NavScreen(navController , signalViewModel)
         }
         composable(HomeRoutes.ProfileSettingScreen.route)
         {
-            ProfileSettingScreen()
+            ProfileSettingScreen(userViewModel)
         }
         composable(HomeRoutes.PreferencesScreen.route)
         {
-            Prefrences()
+            Prefrences(userViewModel)
         }
         composable(HomeRoutes.AboutSinglee.route)
         {

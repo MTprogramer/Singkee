@@ -2,6 +2,7 @@ package com.Singlee.forex.Utils
 
 
 import android.content.SharedPreferences
+import com.Singlee.forex.DataModels.SettingData
 import com.Singlee.forex.DataModels.UserData
 import javax.inject.Inject
 
@@ -131,24 +132,64 @@ class SharedPrefs @Inject constructor(var sharePref: SharedPreferences) {
     }
 
     fun saveUser(data: UserData) {
-        save(CommonKeys.LOGGED_IN,true)
-        save(CommonKeys.USER_ID,data.vid)
-        save(CommonKeys.NAME,data.name)
-        save(CommonKeys.EMAIL,data.email)
-        save(CommonKeys.SUBSCRIBED,data.subscription)
-//        save(CommonKeys.PHONE,data.phone)
-//        save(CommonKeys.COUNTRY_CODE,data.countryCode)
-//        save(CommonKeys.MESSAGE_ID,data.messageId)
+        save(Constant.LOGGED_IN,true)
+        save(Constant.USER_ID,data.vid)
+        save(Constant.NAME,data.name)
+        save(Constant.EMAIL,data.email)
+        save(Constant.SUBSCRIBED,data.subscription)
+        save(Constant.IMAGE_URL,data.profileImage)
+        save(Constant.PASSWORD,data.password)
+        save(Constant.IS_THIRDPARTY,data.is_third_party)
+        // profile setting
+        save(Constant.chat_Notifications,data.settingData.chat_Notifications)
+        save(Constant.support_Notifications,data.settingData.support_Notifications)
+        save(Constant.progress_Notifications,data.settingData.progress_Notifications)
+        save(Constant.offer_Notifications,data.settingData.offer_Notifications)
+        save(Constant.team_Notifications,data.settingData.team_Notifications)
     }
+
+
+    fun saveSetting(data: SettingData)
+    {
+        save(Constant.chat_Notifications,data.chat_Notifications)
+        save(Constant.support_Notifications,data.support_Notifications)
+        save(Constant.progress_Notifications,data.progress_Notifications)
+        save(Constant.offer_Notifications,data.offer_Notifications)
+        save(Constant.team_Notifications,data.team_Notifications)
+    }
+
+    fun getProfilePref() : SettingData
+    {
+        return SettingData(
+            chat_Notifications = getBoolean(Constant.chat_Notifications),
+            support_Notifications = getBoolean(Constant.support_Notifications),
+            progress_Notifications = getBoolean(Constant.progress_Notifications),
+            offer_Notifications = getBoolean(Constant.offer_Notifications),
+            team_Notifications = getBoolean(Constant.team_Notifications)
+        )
+
+    }
+
+    fun getUser():UserData
+    {
+        return UserData(
+            vid =  getString(Constant.USER_ID)!!,
+            name =  getString(Constant.NAME)!!,
+            email =  getString(Constant.EMAIL)!!,
+            password =  getString(Constant.PASSWORD)!!,
+            is_third_party = getBoolean(Constant.IS_THIRDPARTY)
+        )
+    }
+
     fun setSubscribed(subscribed:Boolean){
-        save(CommonKeys.SUBSCRIBED,subscribed)
+        save(Constant.SUBSCRIBED,subscribed)
     }
     fun isSubscribed():Boolean{
-        return getBoolean(CommonKeys.SUBSCRIBED)
+        return getBoolean(Constant.SUBSCRIBED)
     }
 
     fun getMessageId(): String? {
-        return getString(CommonKeys.MESSAGE_ID)
+        return getString(Constant.MESSAGE_ID)
     }
 
 

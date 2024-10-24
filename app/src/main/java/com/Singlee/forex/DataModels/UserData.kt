@@ -6,5 +6,7 @@ data class UserData(
     val password : String = "",
     val vid : String  = "",
     val profileImage : String = "" ,
-    val subscription : Boolean = false
+    val subscription : Boolean = false,
+    val is_third_party : Boolean = false,
+    val settingData: SettingData = SettingData()
 )

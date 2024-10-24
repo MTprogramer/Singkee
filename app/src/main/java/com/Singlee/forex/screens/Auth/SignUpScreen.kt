@@ -30,6 +30,7 @@ import com.Singlee.forex.Utils.hasNumber
 import com.Singlee.forex.Utils.hasSpecialCharacter
 import com.Singlee.forex.Utils.isValidEmail
 import com.Singlee.forex.graph.AuthRouts
+import com.Singlee.forex.graph.NavRouts
 import com.Singlee.forex.screens.MainActivity
 import com.Singlee.forex.ui.theme.mediumHint
 import com.facebook.CallbackManager
@@ -107,7 +108,11 @@ fun signUpScreen(navController: NavController, authViewModel: AuthViewModel)
             }
             is Response.Success -> {
                 isLoading.value = false
-                Log.d("status", "suceess + ${(result as Response.Success<AuthResult>).data.user?.email}")
+                Log.d("status", "success + ${(result as Response.Success<AuthResult>).data.user?.email}")
+                navController.navigate(NavRouts.AppRoute.route) {
+                    // Clear the back stack to prevent the user from returning to the login screen
+                    popUpTo(NavRouts.AuthRoute.route) { inclusive = true }
+                }
             }
             is Response.Error -> {
                 isLoading.value = false

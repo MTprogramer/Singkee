@@ -205,6 +205,7 @@ class AuthViewModel @Inject constructor(
             super.onCleared()
             LoginManager.getInstance().unregisterCallback(callbackManager)
         }
+
 }
 
 

@@ -24,10 +24,16 @@ class MessageRepoImp @Inject constructor(
 ) : MessageRepo {
     override suspend fun sendMessage(message: Message): Flow<Response<Boolean>> {
         return flow {
-            val messageWithId = sharedPrefs.getString(Constant.IMAGE_URL)
-                ?.let { message.copy( profileImage = it , isSent = true) } // Generate a temporary ID
+            val messageWithId =  message
+                .copy(
+                    profileImage = sharedPrefs.getString(Constant.IMAGE_URL)!!,
+                    isSent = true,
+                    senderName = sharedPrefs.getString(Constant.NAME)!!,
+                    author = sharedPrefs.getBoolean(Constant.AUTHOR)
+                )
+
             val result = safeApiCall(context) {
-                firestore.collection("messages").add(messageWithId!!).await()
+                firestore.collection("messages").add(messageWithId).await()
                 true
             }
             emit(result)

@@ -43,7 +43,7 @@ class AuthRepositoryImpl @Inject constructor (
                val result = firebaseAuth.createUserWithEmailAndPassword(email,password).await()
                val user  = result.user!!
 
-               val userData = UserData(name , email, password , user.uid, "https://firebasestorage.googleapis.com/v0/b/singlee-18637.appspot.com/o/Profile.png?alt=media&token=b2d51bac-4d56-4e0c-b436-af5a3002b4b7",false  , false , SettingData() )
+               val userData = UserData(name , email, password , user.uid, "https://firebasestorage.googleapis.com/v0/b/singlee-18637.appspot.com/o/Profile.png?alt=media&token=b2d51bac-4d56-4e0c-b436-af5a3002b4b7",false  , false , false , false , "" , SettingData() )
                createUser(user.uid , userData)
                sharedPrefs.saveUser(userData)
 
@@ -66,7 +66,7 @@ class AuthRepositoryImpl @Inject constructor (
                 Log.d("result",result.toString())
                 result.user?.email?.let { Log.d("email", it) }
 
-                val userdata = UserData(result.user?.displayName!! , result.user?.email!! , "" , result.user!!.uid , result.user!!.photoUrl.toString() , false , true , SettingData())
+                val userdata = UserData(result.user?.displayName!! , result.user?.email!! , "" , result.user!!.uid , result.user!!.photoUrl.toString() , false , true  , false , false , "" , SettingData())
                 createUser(result.user!!.uid , userdata )
                 result
             }

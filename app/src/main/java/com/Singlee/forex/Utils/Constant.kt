@@ -1,7 +1,13 @@
 package com.Singlee.forex.Utils
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.Singlee.forex.DataModels.SignalData
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -16,7 +22,8 @@ object Constant
     val NAME = "NAME"
     val EMAIL = "EMAIL"
     val PASSWORD = "PASSWORD"
-val IMAGE_URL = "IMAGE_URL"
+    val AUTHOR = "AUTHOR"
+    val IMAGE_URL = "IMAGE_URL"
     val IS_THIRDPARTY = "IS_THIRDPARTY"
 
     val MESSAGE_ID = "MESSAGE_ID"
@@ -43,5 +50,37 @@ val IMAGE_URL = "IMAGE_URL"
 
         return dateFormat.format(date)
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun <T : Any> groupSignalsByDate(signals: List<T>, timestampExtractor: (T) -> Timestamp?): Map<String, List<T>> {
+        val today = LocalDate.now()
+        val yesterday = today.minusDays(1)
+
+        return signals.groupBy { signal ->
+            val signalDate = timestampExtractor(signal)?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
+            when {
+                signalDate == today -> "Today"
+                signalDate == yesterday -> "Yesterday"
+                signalDate != null -> signalDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
+                else -> "Unknown Date"
+            }
+        }
+    }
+
+
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    fun groupSignalsByDate(signals: List<T>): Map<String, List<T>> {
+//        val today = LocalDate.now()
+//        val yesterday = today.minusDays(1)
+//
+//        return signals.groupBy { signal ->
+//            val signalDate = signal.timestamp?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
+//            when (signalDate) {
+//                today -> "Today"
+//                yesterday -> "Yesterday"
+//                else -> signalDate?.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")) ?: "Unknown Date"
+//            }
+//        }
+//    }
 
 }

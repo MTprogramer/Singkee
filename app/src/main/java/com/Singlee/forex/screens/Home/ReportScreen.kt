@@ -128,7 +128,7 @@ fun ReportScreen(navController: NavHostController, signalViewModel: SignalVideoM
                 }
 
                 // Group signals by date
-                val groupedSignals = groupSignalsByDate(signals)
+                val groupedSignals = Constant.groupSignalsByDate(signals){it.timestamp}
 
                 Column {
                     groupedSignals.forEach { (dateLabel, signalsForDate) ->
@@ -154,20 +154,7 @@ fun ReportScreen(navController: NavHostController, signalViewModel: SignalVideoM
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun groupSignalsByDate(signals: List<SignalData>): Map<String, List<SignalData>> {
-    val today = LocalDate.now()
-    val yesterday = today.minusDays(1)
 
-    return signals.groupBy { signal ->
-        val signalDate = signal.timestamp?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
-        when (signalDate) {
-            today -> "Today"
-            yesterday -> "Yesterday"
-            else -> signalDate?.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")) ?: "Unknown Date"
-        }
-    }
-}
 
 @Composable
 fun tradesDetail(data: SignalData) {

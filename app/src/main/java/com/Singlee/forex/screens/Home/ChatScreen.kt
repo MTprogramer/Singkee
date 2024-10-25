@@ -1,6 +1,8 @@
     package com.Singlee.forex.screens.Home
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,11 +23,9 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +34,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,9 +51,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.Singlee.forex.DataModels.Message
 import com.Singlee.forex.R
 import com.Singlee.forex.Repo.Response
@@ -62,14 +65,28 @@ import com.Singlee.forex.ui.theme.blue
 import com.Singlee.forex.ui.theme.duble_extra_light
 import com.Singlee.forex.ui.theme.editextbg
 import com.Singlee.forex.ui.theme.focusEditextbg
+import com.Singlee.forex.ui.theme.hintColor
+import com.Singlee.forex.ui.theme.mediumTitle
 import com.Singlee.forex.ui.theme.sans
 import com.Singlee.forex.ui.theme.statusBar
 import com.Singlee.forex.ui.theme.titleColor
 import com.Singlee.forex.ui.theme.white
 import kotlinx.coroutines.delay
 import java.util.UUID
+import kotlin.random.Random
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Preview
+@Composable
+    fun review()
+    {
+        val messageViewModel = hiltViewModel<ChatViewModel>()
+        ChatScreen(messageViewModel = messageViewModel)
+        oppositeReply(isShowProfile =true, message = Message(content = "hello" , senderName = "Ali Hassan" ))
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
 fun ChatScreen(messageViewModel: ChatViewModel)
 {
@@ -77,14 +94,34 @@ fun ChatScreen(messageViewModel: ChatViewModel)
     val update by messageViewModel.update.collectAsState(initial = Response.Empty)
     val messages = remember { mutableStateListOf<Message>()}
     val listState = rememberLazyListState()
+    var start by remember {
+        mutableStateOf(false)
+    }
+    var scroll by remember { mutableStateOf(false) }
+
+    val isAtEnd by remember {
+        derivedStateOf {
+            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            val totalItemsCount = listState.layoutInfo.totalItemsCount
+            lastVisibleItemIndex == totalItemsCount - 1
+        }
+    }
+
     LaunchedEffect(Unit)
     {
         messageViewModel.getMessages()
     }
+    LaunchedEffect(start)
+    {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.size - 1)
+        }
+    }
 
     // Update the scroll when new messages are added
     LaunchedEffect(messages.size) {
-        if (messages.isNotEmpty()) {
+        if (messages.isNotEmpty() && scroll) {
+            scroll = false
             listState.animateScrollToItem(messages.size - 1)
         }
     }
@@ -103,6 +140,12 @@ fun ChatScreen(messageViewModel: ChatViewModel)
             }
             is Response.Success -> {
                 val newMessages = (messagesState as Response.Success).data
+                if ( isAtEnd)
+                {
+                    scroll = true
+                }
+
+                start = true
 
                 messages.clear()
                 messages.addAll(newMessages)
@@ -130,56 +173,75 @@ fun ChatScreen(messageViewModel: ChatViewModel)
         }
     }
 
-  Box(Modifier.padding(start = 20.dp , end = 20.dp , top = 20.dp , bottom = 15.dp)){
-      Column() {
-          ChatToolbar()
+    Box(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 15.dp)) {
+        Column {
+            ChatToolbar()
 
+            Spacer(modifier = Modifier.height(20.dp))
 
-          Spacer(modifier = Modifier.height(20.dp))
+            if (messages.isNotEmpty()) {
+                // Group messages by date
+                val groupedSignals = Constant.groupSignalsByDate(messages) { it.timestamp }
 
-          LazyColumn (
-              Modifier
-                  .padding(bottom = 75.dp)
-                  .weight(1f)
-                  .imePadding() , state = listState){
-              itemsIndexed(messages) { index, message ->
-                  if (message.senderId != Constant.userID) {
-                      // Handle messages from the opposite sender
-                      if (index != 0) {
-                          // Check if the previous message is different
-                          if (messages[index - 1].senderId != message.senderId) {
-                              oppositeReply(isShowProfile = true, message = message)
-                          } else {
-                              oppositeReply(isShowProfile = false, message = message)
-                          }
-                      } else {
-                          oppositeReply(isShowProfile = true, message = message) // First message
-                      }
-                  } else {
-                      // Handle messages from the current user
-                      if (index < messages.size - 1) {
-                          // Check if the next message is different
-                          if (messages[index + 1].senderId != message.senderId) {
-                              ReplyMessage( false, message = message)
-                          } else {
-                              ReplyMessage(true, message = message)
-                          }
-                      } else {
-                          ReplyMessage(false, message = message) // Last message
-                      }
-                  }
-              }
-          }
-      }
+                LazyColumn(
+                    Modifier
+                        .padding(bottom = 75.dp)
+                        .weight(1f)
+                        .imePadding(),
+                    state = listState
+                ) {
+                    groupedSignals.forEach { (dateHeader, messageList) ->
+                        // Add the date header
+                        item {
+                            Text(
+                            text = dateHeader,
+                            style = MaterialTheme.typography.displayMedium,
+                            color = hintColor,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp))
+                        }
+
+                        // Add messages for the current date group
+                        itemsIndexed(messageList) { index, message ->
+                            if (message.senderId != Constant.userID) {
+                                // Handle messages from the opposite sender
+                                if (index != 0) {
+                                    if (messageList[index - 1].senderId != message.senderId) {
+                                        oppositeReply(isShowProfile = true, message = message)
+                                    } else {
+                                        oppositeReply(isShowProfile = false, message = message)
+                                    }
+                                } else {
+                                    oppositeReply(isShowProfile = true, message = message) // First message in the group
+                                }
+                            } else {
+                                // Handle messages from the current user
+                                if (index < messageList.size - 1) {
+                                    if (messageList[index + 1].senderId != message.senderId) {
+                                        ReplyMessage( false, message = message)
+                                    } else {
+                                        ReplyMessage( true, message = message)
+                                    }
+                                } else {
+                                    ReplyMessage( false, message = message) // Last message in the group
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
       replyFeild()
       {
+          scroll = true
           messages.add(it)
           messageViewModel.sendMessage(it)
       }
   }
-
-
 }
 
     @Composable
@@ -234,7 +296,7 @@ fun ChatScreen(messageViewModel: ChatViewModel)
                Box(
                    modifier = Modifier
                        .size(50.dp)
-                       .clickable (enabled = !isSending){
+                       .clickable(enabled = !isSending) {
                            if (value.value.isNotEmpty()) {
                                isSending = true // Start sending
                                val messageId = UUID
@@ -363,6 +425,7 @@ fun title(weight: Modifier)
 fun oppositeReply(isShowProfile : Boolean, message: Message)
 {
     val radius = if (isShowProfile) 0f else 30f
+//    val bottom = if (isShowProfile) 5.dp else 10.dp
     Spacer(modifier = Modifier.height(5.dp))
 
     Row {
@@ -396,6 +459,17 @@ fun oppositeReply(isShowProfile : Boolean, message: Message)
             )
         )
         {
+            if (isShowProfile){
+            Text(
+                text = message.senderName,
+                fontFamily = sans,
+                fontSize = 8.sp,
+                fontWeight = FontWeight.Normal,
+                color = mediumTitle,
+                letterSpacing = 1.sp,
+                modifier = Modifier.padding(horizontal = 10.dp , vertical = 0.dp)
+            )
+            }
             Text(
                 text = message.content,
                 fontFamily = sans,
@@ -403,7 +477,11 @@ fun oppositeReply(isShowProfile : Boolean, message: Message)
                 fontWeight = FontWeight.Normal,
                 color = white,
                 letterSpacing = 1.sp,
-                modifier = Modifier.padding(horizontal = 10.dp , vertical = 15.dp)
+                modifier = Modifier
+                    .padding(horizontal = 10.dp, vertical = 10.dp)
+                    .padding(
+                        top = if (isShowProfile) 5.dp else 0.dp
+                    )
             )
         }
     }
@@ -448,7 +526,7 @@ fun ReplyMessage(isLast: Boolean, message: Message)
                      fontWeight = FontWeight.Normal,
                      color = white,
                      letterSpacing = 1.sp,
-                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 15.dp)
+                     modifier = Modifier.padding(horizontal = 10.dp , vertical = 10.dp)
                  )
              }
          }

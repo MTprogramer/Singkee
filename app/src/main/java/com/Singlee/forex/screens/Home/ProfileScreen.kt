@@ -55,6 +55,10 @@ fun ProfileScreen(navController: NavHostController, userViewModel: UserViewModel
     val data by userViewModel.userDataresult.collectAsState(initial = Response.Empty)
     val name = remember { mutableStateOf("") }
 
+    LaunchedEffect(Unit) {
+        userViewModel.getUserData()
+    }
+
     LaunchedEffect(data) {
         when (data) {
             is Response.Loading -> {
@@ -63,7 +67,7 @@ fun ProfileScreen(navController: NavHostController, userViewModel: UserViewModel
             is Response.Success -> {
                 val user = (data as Response.Success<UserData>).data
                 name.value = user.name
-                Log.d("status", "Success: ${user.email}")
+                Log.d("status", "Success: ${user.email} and name is :: ${user.name}")
             }
             is Response.Error -> {
                 Log.d("error", (data as Response.Error).message)
@@ -154,7 +158,7 @@ fun AvtarDesign(name: MutableState<String>)
         }
 
         Text(
-            text = "Hello, $name",
+            text = "Hello, ${name.value}",
             style = signalType,
             fontSize = 24.sp,
             color = Color.White,

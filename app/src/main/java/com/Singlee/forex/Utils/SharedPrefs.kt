@@ -139,6 +139,7 @@ class SharedPrefs @Inject constructor(var sharePref: SharedPreferences) {
         save(Constant.SUBSCRIBED,data.subscription)
         save(Constant.IMAGE_URL,data.profileImage)
         save(Constant.PASSWORD,data.password)
+        save(Constant.AUTHOR,data.author)
         save(Constant.IS_THIRDPARTY,data.is_third_party)
         // profile setting
         save(Constant.chat_Notifications,data.settingData.chat_Notifications)

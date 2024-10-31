@@ -56,10 +56,10 @@ fun CustomBottomNavigation(
 
 
     val items= listOf(
-        navItem(HomeRoutes.HomeRoute.route),
-        navItem(HomeRoutes.StartChatRoute.route),
-        navItem(HomeRoutes.ReportScreen.route),
-        navItem(HomeRoutes.ProfileScreen.route),
+        navItem(HomeRoutes.HomeRoute.route , "Signals" , R.drawable.signals_icon),
+        navItem(HomeRoutes.StartChatRoute.route , "Chats" , R.drawable.chat_icon),
+        navItem(HomeRoutes.ReportScreen.route , "Report" , R.drawable.report_icon),
+        navItem(HomeRoutes.ProfileScreen.route , "Profile" , R.drawable.profile_icon_nav),
     )
 
     // Get the index of the selected route

@@ -1,5 +1,6 @@
 package com.Singlee.forex.screens.Home
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -58,6 +59,7 @@ import com.Singlee.forex.ui.theme.signalType
 import com.Singlee.forex.ui.theme.signalValues
 import com.Singlee.forex.ui.theme.titleColor
 import com.Singlee.forex.ui.theme.upgradeGradient
+import com.google.gson.Gson
 
 
 @Composable
@@ -122,10 +124,13 @@ fun AllSignalScreen(navController: NavHostController, signalViewModel: SignalVid
                     )
                     LazyColumn {
                         items(signals.size) {
-                            signalDesign(data = signals[it],
+                            signalDesign(data = signals[it], it ,
                                 { navController.navigate(HomeRoutes.PremiumRoute.route) })
                             {
-                                navController.navigate(HomeRoutes.SignalDetail.route)
+                                position ->
+                                val signalDataJson = Uri.encode(Gson().toJson(signals[position]))
+                                navController.navigate("${HomeRoutes.SignalDetail.route}/$signalDataJson")
+
                             }
                         }
                     }
@@ -138,7 +143,7 @@ fun AllSignalScreen(navController: NavHostController, signalViewModel: SignalVid
 }
 
 @Composable
-private fun signalDesign(data: SignalData, function: () -> Unit , itemClick : () -> Unit)
+private fun signalDesign(data: SignalData, i: Int, function: () -> Unit, itemClick: (Int) -> Unit)
 {
 
     Spacer(modifier = Modifier.height(15.dp))
@@ -147,7 +152,7 @@ private fun signalDesign(data: SignalData, function: () -> Unit , itemClick : ()
             .fillMaxWidth()
             .wrapContentHeight()
             .background(duble_extra_light, shape = RoundedCornerShape(10.dp))
-            .clickable { if (data.isPremium) function.invoke() else itemClick.invoke() }
+            .clickable { if (data.isPremium) function.invoke() else itemClick.invoke(i) }
     )
     {
        Column {

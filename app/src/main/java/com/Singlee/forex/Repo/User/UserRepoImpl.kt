@@ -1,10 +1,10 @@
 package com.Singlee.forex.Repo.User
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
-import androidx.compose.ui.unit.Constraints
+import android.widget.Toast
 import androidx.navigation.NavController
-import com.Singlee.forex.DataModels.SettingData
 import com.Singlee.forex.DataModels.UserData
 import com.Singlee.forex.Repo.Response
 import com.Singlee.forex.Repo.safeApiCall
@@ -13,26 +13,66 @@ import com.Singlee.forex.Utils.OTP
 import com.Singlee.forex.Utils.SharedPrefs
 import com.Singlee.forex.graph.AuthRouts
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UserRepoImpl @Inject constructor (
-   private val firebaseAuth: FirebaseAuth,
-   private val firebaseFirestore: FirebaseFirestore,
+    private val firebaseAuth: FirebaseAuth,
+    private val firebaseFirestore: FirebaseFirestore,
     private val context: Context,
-    private val sharedPrefs: SharedPrefs
+    private val sharedPrefs: SharedPrefs,
+    private val firebaseStorage: FirebaseStorage
 ) : UserRepo {
+
+
+
+    private val _passwordUpdateSuccess = MutableStateFlow(false)
+    private val _proceedWithUpdate = MutableStateFlow(true)
+    val proceedWithUpdate = _proceedWithUpdate.asStateFlow()
+
+
+   override suspend fun getRandomThreeUsersImageUrls(): Flow<Response<List<String>>> {
+
+        return flow {
+            val result = safeApiCall(context) {
+                val usersCollection = firebaseFirestore.collection("users")
+                // 1. Fetch all user documents (or limit to a subset for performance reasons)
+                val querySnapshot = usersCollection.get().await()
+                val users = querySnapshot.documents
+
+                val randomUsers = if (users.size <= 3) users else users.shuffled().take(3)
+
+                // 4. Extract the imageUrl field from each selected user
+                val imageUrls = randomUsers.mapNotNull { document ->
+                    document.getString("profileImage")
+                }.toMutableList()
+
+                while (imageUrls.size < 3) {
+                    imageUrls.add("") // Add empty fields to reach a size of 3
+                }
+
+                imageUrls
+            }
+            emit(result)
+        }.catch {
+            emit(Response.Error("SomeThing went wrong $it"))
+        }
+    }
+
 
 
     override suspend fun userExists(email: String , navController: NavController): Flow<Response<Boolean>> {
         return flow {
             var password = ""
+            var isThirdParty = true
             val response = safeApiCall(context) {
                 val response = safeApiCall(context) {
                     val usersCollection = firebaseFirestore.collection("users")
@@ -41,12 +81,13 @@ class UserRepoImpl @Inject constructor (
                     {
                         val userdoc = emailC.documents.first()
                         password = userdoc.getString("password").toString()
+                        isThirdParty = userdoc.getBoolean("_third_party") == true
                     }
                     !emailC.isEmpty
                 }
 
                 if (response is Response.Success) {
-                    if (response.data && password.isNotEmpty()) {
+                    if (response.data && password.isNotEmpty() && !isThirdParty) {
                         OTP.otpEmail(email)
                         navController.navigate("${AuthRouts.OTPRoute.route}/$email/$password")
                     } else {
@@ -70,81 +111,121 @@ class UserRepoImpl @Inject constructor (
 //                }
 //            }?.isSuccessful?:false
 //    }
-    fun changeUserPassword(newPassword: String):Boolean {
+private suspend fun changeUserPassword(newPassword: String): Boolean {
+    return try {
         val user = FirebaseAuth.getInstance().currentUser
-       return user?.updatePassword(newPassword)
-            ?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d("Password", "Password updated successfully.")
-                } else {
-                    Log.d("Password", task.exception?.message.toString())
-                }
-            }?.isSuccessful?:false
+        user?.updatePassword(newPassword)?.await() // Await to ensure completion
+        Log.d("PasswordUpdate", "Password updated successfully.")
+        true
+    } catch (e: Exception) {
+        Log.e("PasswordUpdate", "Error updating password: ${e.message}")
+        false
+    }
+}
+
+    private suspend fun reAuthenticateUser(email: String, password: String): Result<String> {
+        return try {
+            val authResult = FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).await()
+            Result.success(authResult.user?.uid ?: "")
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
+
+    // Main function to update user data
     override suspend fun updateUserData(userData: UserData): Flow<Response<Boolean>> = flow {
-        emit(Response.Loading)
         try {
+            emit(Response.Loading)
+            // Reset the proceedWithUpdate state
+            _proceedWithUpdate.value = true
 
-            if (!userData.is_third_party)
-            {
-                var reAuthSuccess = false
-                // Re-authenticate user
-                reAuthenticateUser(sharedPrefs.getString(Constant.EMAIL) ?: "", sharedPrefs.getString(Constant.PASSWORD) ?: "") {
-                        success, message, id ->
-                    reAuthSuccess = success
-                    Log.d("reAuth", "Success: $success, Message: $message, ID: $id")
+            if (!userData.thirdParty) {
+                val reAuthResult = reAuthenticateUser(
+                    sharedPrefs.getString(Constant.EMAIL) ?: "",
+                    sharedPrefs.getString(Constant.PASSWORD) ?: ""
+                )
 
-
-                }
-                if (!reAuthSuccess) {
-                    emit(Response.Error("Re-authentication failed"))
-                    return@flow
-                }
-
-//            // Update email
-//            val emailSuccess = changeUserEmail(newEmail)
-//            if (!emailSuccess) {
-//                emit(Response.Error("Email update failed"))
-//                return@flow
-//            }
+                // Handle the result
+                reAuthResult.fold(
+                    onSuccess = { userId ->
+                        Log.d("reAuth", "Success: true, User ID: $userId")
+                    },
+                    onFailure = { exception ->
+                        emit(Response.Error(exception.message ?: "Re-authentication failed"))
+                        _proceedWithUpdate.value = false // Prevent further execution
+                    }
+                )
 
                 // Update password
-                val passwordSuccess = changeUserPassword(userData.password)
-                if (!passwordSuccess) {
-                    emit(Response.Error("Password update failed"))
-                    return@flow
+                if (_proceedWithUpdate.value) {
+                    Log.d("PasswordUpdate", "Attempting to change password.")
+                    val passwordSuccess = changeUserPassword(userData.password)
+                    _passwordUpdateSuccess.value = passwordSuccess
+                    if (!passwordSuccess) {
+                        Log.d("PasswordUpdate", "Password update failed.")
+                        emit(Response.Error("Password update failed"))
+                        _proceedWithUpdate.value = false // Prevent further execution
+                    } else {
+                        Log.d("PasswordUpdate", "Password updated successfully.")
+                    }
                 }
             }
 
-            val updatedData: MutableMap<String, Any> = mutableMapOf(
-                "name" to userData.name
-            )
-            // Conditionally add the "password" field
-            if (!userData.is_third_party) {
-                updatedData["password"] = userData.password
+            // Check if we can proceed with the Firestore update
+            if (_proceedWithUpdate.value && _passwordUpdateSuccess.value) {
+                val result = updateFirestore(userData)
+                emit(result)
+                Toast.makeText(context,"data Uploaded successfully",Toast.LENGTH_SHORT).show()
+            } else {
+                Log.d("UpdateUserData", "Skipping Firestore update due to password failure.")
+                emit(Response.Error("Password update failed, skipping Firestore update"))
             }
-
-            // Update Firestore document
-            val firestoreUpdate = firebaseFirestore.collection("users").document(userData.vid).update(updatedData)
-            firestoreUpdate.await() // Use await() to wait for completion
-
-            sharedPrefs.save(Constant.NAME , userData.name)
-            if (!userData.is_third_party)
-                sharedPrefs.save(Constant.PASSWORD , userData.password)
-
-            emit(Response.Success(true))
         } catch (e: Exception) {
+            Log.e("UpdateUserDataError", e.message ?: "An unknown error occurred")
             emit(Response.Error(e.message ?: "An unknown error occurred"))
         }
     }
 
-    override suspend fun updateSettingData(SettingData: SettingData): Flow<Response<Boolean>> {
+    private suspend fun updateFirestore(userData: UserData): Response<Boolean> {
+        // Prepare data for Firestore update
+        Log.d("name", userData.name)
+        Log.d("password", userData.password)
+        val updatedData: MutableMap<String, Any> = mutableMapOf(
+            "name" to userData.name
+        )
+        if (!userData.thirdParty) {
+            updatedData["password"] = userData.password
+        }
+
+        return try {
+            // Update Firestore document
+            Log.d("FirestoreUpdate", "Attempting to update Firestore for user: ${userData.vid} with data: $updatedData")
+            val firestoreUpdate = firebaseFirestore.collection("users").document(userData.vid).update(updatedData)
+            firestoreUpdate.await() // Use await() to wait for completion
+            Log.d("FirestoreUpdate", "Firestore update successful for user: ${userData.vid}")
+
+            // Update shared preferences
+            sharedPrefs.save(Constant.NAME, userData.name)
+            if (!userData.thirdParty) {
+                sharedPrefs.save(Constant.PASSWORD, userData.password)
+            }
+
+            Response.Success(true)
+        } catch (e: Exception) {
+            Log.e("FirestoreUpdateError", e.message ?: "An error occurred while updating Firestore")
+            Response.Error(e.message ?: "An error occurred while updating Firestore")
+        }
+    }
+
+
+
+    override suspend fun updateSettingData(userData: UserData): Flow<Response<Boolean>> {
         return flow<Response<Boolean>> {
             val response = safeApiCall(context){
                 val userRef = firebaseFirestore.collection("users").document(sharedPrefs.getString(Constant.USER_ID) ?: "")
-                userRef.update(SettingData.toMap()).await()
-                sharedPrefs.saveSetting(SettingData)
+                userRef.set(userData).await()
+                sharedPrefs.saveSetting(userData.settingData)
                 true
             }
             emit(response)
@@ -153,18 +234,74 @@ class UserRepoImpl @Inject constructor (
         }
     }
 
-    fun reAuthenticateUser(email: String, password: String, onComplete: (Boolean, String? , String?) -> Unit) {
-        val user = firebaseAuth.currentUser
-        val credential = EmailAuthProvider.getCredential(email, password)
+    suspend fun deleteImageByUrl(imageUrl: String): Boolean {
+        return try {
+            val storageRef = firebaseStorage.getReferenceFromUrl(imageUrl)
+            storageRef.delete().await() // suspend function with await for coroutines
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
 
-        user?.reauthenticate(credential)
-            ?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    onComplete(true, "Re-authentication successful." , user.uid)
-                } else {
-                    onComplete(false, task.exception?.message , null)
+    suspend fun uploadNewImage(imageUri: String): String {
+        return try {
+            // Assume you're using Firebase Storage
+            val storageRef = FirebaseStorage.getInstance().reference.child("avatars/${sharedPrefs.getString(Constant.USER_ID)}.jpg")
+            val uploadTask = storageRef.putFile(Uri.parse(imageUri)).await() // Upload the new image
+            val downloadUrl = storageRef.downloadUrl.await() // Get the download URL
+            downloadUrl.toString() // Return the URL of the uploaded image
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
+        }
+    }
+
+    suspend fun updateUserImageInDatabase(newImageUrl: String): Boolean {
+        return try {
+            // Update the user's profile with the new image URL
+            val userId = sharedPrefs.getString(Constant.USER_ID)?:""
+            val dbRef = FirebaseFirestore.getInstance().collection("users").document(userId)
+            dbRef.update("profileImage", newImageUrl).await()
+            sharedPrefs.save(Constant.IMAGE_URL,newImageUrl)
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+
+
+    override suspend fun updateAvtar(imageUri: String): Flow<Response<Boolean>> = flow {
+        try {
+                // 1. Delete previous image by URL (if available)
+                val previousImageUrl = sharedPrefs.getString(Constant.IMAGE_URL) // Assuming you have a way to get the current image URL
+                if (previousImageUrl!!.isNotEmpty()) {
+                    val deleteResult =
+                        deleteImageByUrl(previousImageUrl) // Call a function to delete the old image
+                    if (!deleteResult) {
+                        emit(Response.Error("Failed to delete the previous image"))
+                        return@flow
+                    }
                 }
-            }
+                // 2. Upload new image
+                val newImageUrl = uploadNewImage(imageUri) // Function to upload the new image and get its URL
+                if (newImageUrl.isNotEmpty()) {
+                    val updateResult = updateUserImageInDatabase(newImageUrl)
+                    if (updateResult) {
+                        emit(Response.Success(true)) // Emit success if all operations succeed
+                    } else {
+                        emit(Response.Error("Failed to update user profile with the new image"))
+                    }
+                } else {
+                    emit(Response.Error("Failed to upload the new image"))
+                }
+
+        } catch (e: Exception) {
+            emit(Response.Error("An error occurred: ${e.localizedMessage}"))
+        }
     }
 
 

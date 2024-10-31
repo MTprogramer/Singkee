@@ -26,7 +26,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -55,7 +58,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.Singlee.forex.DataModels.Message
 import com.Singlee.forex.R
 import com.Singlee.forex.Repo.Response
@@ -65,6 +69,7 @@ import com.Singlee.forex.ui.theme.blue
 import com.Singlee.forex.ui.theme.duble_extra_light
 import com.Singlee.forex.ui.theme.editextbg
 import com.Singlee.forex.ui.theme.focusEditextbg
+import com.Singlee.forex.ui.theme.gold
 import com.Singlee.forex.ui.theme.hintColor
 import com.Singlee.forex.ui.theme.mediumTitle
 import com.Singlee.forex.ui.theme.sans
@@ -73,7 +78,6 @@ import com.Singlee.forex.ui.theme.titleColor
 import com.Singlee.forex.ui.theme.white
 import kotlinx.coroutines.delay
 import java.util.UUID
-import kotlin.random.Random
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -81,14 +85,12 @@ import kotlin.random.Random
 @Composable
     fun review()
     {
-        val messageViewModel = hiltViewModel<ChatViewModel>()
-        ChatScreen(messageViewModel = messageViewModel)
-        oppositeReply(isShowProfile =true, message = Message(content = "hello" , senderName = "Ali Hassan" ))
+        oppositeReply(isShowProfile =true, message = Message(content = "hello" , senderName = "Ali Hassan" , author = true ))
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-fun ChatScreen(messageViewModel: ChatViewModel)
+fun ChatScreen(messageViewModel: ChatViewModel, navController: NavHostController)
 {
     val messagesState by messageViewModel.messages.collectAsState(initial = Response.Empty)
     val update by messageViewModel.update.collectAsState(initial = Response.Empty)
@@ -175,7 +177,7 @@ fun ChatScreen(messageViewModel: ChatViewModel)
 
     Box(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 15.dp)) {
         Column {
-            ChatToolbar()
+            ChatToolbar(navController)
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -339,8 +341,7 @@ fun ChatScreen(messageViewModel: ChatViewModel)
  }
 
 @Composable
-@Preview
-fun ChatToolbar()
+fun ChatToolbar(navController: NavHostController)
 {
     Row(horizontalArrangement = Arrangement.SpaceBetween)
     {
@@ -348,7 +349,7 @@ fun ChatToolbar()
             Modifier.weight(.5f),
             Alignment.CenterStart,
             image = R.drawable.back_icon,
-            function = {})
+            function = {navController.popBackStack()})
         title(Modifier.weight(1f))
     }
 }
@@ -433,7 +434,11 @@ fun oppositeReply(isShowProfile : Boolean, message: Message)
         if (isShowProfile)
         {
             Image(
-                painter = painterResource(id = R.drawable.fake_avtar),
+                painter = rememberAsyncImagePainter(
+                    model = message.profileImage,  // Use the URL directly
+                    placeholder = painterResource(R.drawable.fake_avtar),  // Placeholder when loading
+                    error = painterResource(R.drawable.fake_avtar)
+                ),  // Error image in case of failure
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -460,15 +465,34 @@ fun oppositeReply(isShowProfile : Boolean, message: Message)
         )
         {
             if (isShowProfile){
-            Text(
-                text = message.senderName,
-                fontFamily = sans,
-                fontSize = 8.sp,
-                fontWeight = FontWeight.Normal,
-                color = mediumTitle,
-                letterSpacing = 1.sp,
-                modifier = Modifier.padding(horizontal = 10.dp , vertical = 0.dp)
-            )
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 0.dp),
+                    verticalAlignment = Alignment.CenterVertically // Aligns the icon and text vertically in the center
+                ) {
+
+                    // Add the Text next to the Icon
+                    Text(
+                        text = if (message.author) "Author" else message.senderName,
+                        fontFamily = sans,
+                        fontSize = if (message.author) 10.sp else 8.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = if (message.author) gold else mediumTitle,
+                        letterSpacing = 1.sp,
+                        // Add padding to space out the text from the icon
+                    )
+
+                    // Add the Icon here
+                    if (message.author) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle, // Replace with your icon resource
+                            contentDescription = null, // Provide content description for accessibility
+                            modifier = Modifier.size(16.dp)
+                                .padding(start = 4.dp), // Set size for the icon
+                            tint = gold  // Set the tint color based on condition
+                        )
+                    }
+                }
+
             }
             Text(
                 text = message.content,

@@ -6,6 +6,8 @@ import com.Singlee.forex.Repo.Auth.AuthRepository
 import com.Singlee.forex.Repo.Auth.AuthRepositoryImpl
 import com.Singlee.forex.Repo.Messages.MessageRepo
 import com.Singlee.forex.Repo.Messages.MessageRepoImp
+import com.Singlee.forex.Repo.Password.PasswordRepo
+import com.Singlee.forex.Repo.Password.PasswordRepoImpl
 import com.Singlee.forex.Repo.Signal.SignalRepoImp
 import com.Singlee.forex.Repo.Signal.SignalsRepo
 import com.Singlee.forex.Repo.User.UserRepo
@@ -15,6 +17,7 @@ import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -66,6 +69,9 @@ object AppModule
              .build()
          firestoreSettings = settings
      }
+     @Provides
+    @Singleton
+    fun provideFireStorage() = FirebaseStorage.getInstance()
 
     @Provides
     @Singleton
@@ -73,11 +79,17 @@ object AppModule
     {
         return AuthRepositoryImpl(firebaseAuth , firebaseFirestore ,  context , sharedPrefs)
     }
+    @Provides
+    @Singleton
+    fun passwordRepo(firebaseAuth: FirebaseAuth  , @ApplicationContext context: Context , sharedPrefs: SharedPrefs) : PasswordRepo
+    {
+        return PasswordRepoImpl(firebaseAuth ,  context , sharedPrefs)
+    }
 
     @Provides
     @Singleton
-    fun userRepoImp(firebaseAuth: FirebaseAuth , firebaseFirestore: FirebaseFirestore , @ApplicationContext context: Context , sharedPrefs: SharedPrefs) : UserRepo
+    fun userRepoImp(firebaseAuth: FirebaseAuth , firebaseFirestore: FirebaseFirestore , @ApplicationContext context: Context , sharedPrefs: SharedPrefs , firebaseStorage: FirebaseStorage) : UserRepo
     {
-        return UserRepoImpl(firebaseAuth , firebaseFirestore ,context , sharedPrefs)
+        return UserRepoImpl(firebaseAuth , firebaseFirestore ,context , sharedPrefs , firebaseStorage)
     }
 }

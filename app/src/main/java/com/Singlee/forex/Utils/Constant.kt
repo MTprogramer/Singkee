@@ -31,6 +31,7 @@ object Constant
     // user profile setting
     val chat_Notifications = "chat_Notifications"
     val support_Notifications = "support_Notifications"
+    val Signal = "signal"
     val progress_Notifications = "progress_Notifications"
     val offer_Notifications = "offer_Notifications"
     val team_Notifications = "team_Notifications"

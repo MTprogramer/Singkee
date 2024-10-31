@@ -2,6 +2,7 @@ package com.Singlee.forex.Utils
 
 
 import android.content.SharedPreferences
+import android.util.Log
 import com.Singlee.forex.DataModels.SettingData
 import com.Singlee.forex.DataModels.UserData
 import javax.inject.Inject
@@ -140,9 +141,10 @@ class SharedPrefs @Inject constructor(var sharePref: SharedPreferences) {
         save(Constant.IMAGE_URL,data.profileImage)
         save(Constant.PASSWORD,data.password)
         save(Constant.AUTHOR,data.author)
-        save(Constant.IS_THIRDPARTY,data.is_third_party)
+        save(Constant.IS_THIRDPARTY,data.thirdParty)
         // profile setting
         save(Constant.chat_Notifications,data.settingData.chat_Notifications)
+        save(Constant.Signal,data.settingData.signal)
         save(Constant.support_Notifications,data.settingData.support_Notifications)
         save(Constant.progress_Notifications,data.settingData.progress_Notifications)
         save(Constant.offer_Notifications,data.settingData.offer_Notifications)
@@ -154,15 +156,18 @@ class SharedPrefs @Inject constructor(var sharePref: SharedPreferences) {
     {
         save(Constant.chat_Notifications,data.chat_Notifications)
         save(Constant.support_Notifications,data.support_Notifications)
+        save(Constant.Signal,data.signal)
         save(Constant.progress_Notifications,data.progress_Notifications)
         save(Constant.offer_Notifications,data.offer_Notifications)
         save(Constant.team_Notifications,data.team_Notifications)
+        Log.d("save",data.toString())
     }
 
     fun getProfilePref() : SettingData
     {
         return SettingData(
             chat_Notifications = getBoolean(Constant.chat_Notifications),
+            signal = getBoolean(Constant.Signal),
             support_Notifications = getBoolean(Constant.support_Notifications),
             progress_Notifications = getBoolean(Constant.progress_Notifications),
             offer_Notifications = getBoolean(Constant.offer_Notifications),
@@ -177,8 +182,10 @@ class SharedPrefs @Inject constructor(var sharePref: SharedPreferences) {
             vid =  getString(Constant.USER_ID)!!,
             name =  getString(Constant.NAME)!!,
             email =  getString(Constant.EMAIL)!!,
+            profileImage =  getString(Constant.IMAGE_URL)!!,
             password =  getString(Constant.PASSWORD)!!,
-            is_third_party = getBoolean(Constant.IS_THIRDPARTY)
+            subscription = getBoolean(Constant.SUBSCRIBED),
+            thirdParty = getBoolean(Constant.IS_THIRDPARTY)
         )
     }
 

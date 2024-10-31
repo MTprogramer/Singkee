@@ -166,6 +166,7 @@ class AuthViewModel @Inject constructor(
 
 
         fun googleSignIn(credential: AuthCredential) = viewModelScope.launch {
+            _registrationStatus.value = Response.Loading
             authenticationRepository.googleSignIn(credential).collect { result ->
                 _registrationStatus.value = result
             }

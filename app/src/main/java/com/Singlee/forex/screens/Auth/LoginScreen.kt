@@ -32,6 +32,7 @@ import com.Singlee.forex.graph.AuthRouts
 import com.Singlee.forex.graph.HomeRoutes
 import com.Singlee.forex.graph.NavRouts
 import com.Singlee.forex.ui.theme.mediumHint
+import com.google.firebase.auth.AuthResult
 
 @Composable
 fun loginScreen(
@@ -54,6 +55,7 @@ fun loginScreen(
     btnState.value = email.value.isNotEmpty() && password.value.isNotEmpty()
 
     val result by authViewModel.signInStatus.collectAsState(initial = Response.Empty)
+    val Regisresult by authViewModel.registrationStatus.collectAsState(initial = Response.Empty)
 
 
 
@@ -80,6 +82,37 @@ fun loginScreen(
                 error.value = (result as Response.Error).message
                 userValidation.value = true
                 Log.d("error", (result as Response.Error).message)
+            }
+            Response.Empty -> {
+                Log.d("status", "Empty response")
+            }
+        }
+    }
+
+
+    // Handling login result
+    // Handling registration result
+    LaunchedEffect(Regisresult) {
+        when (Regisresult) {
+            is Response.Loading -> {
+                isLoading.value = true
+                Log.d("status", "Loading")
+            }
+            is Response.Success -> {
+                isLoading.value = false
+                val user = (Regisresult as Response.Success<AuthResult>).data.user
+                Log.d("status", "Success: ${user?.email}")
+
+                navController.navigate(NavRouts.AppRoute.route) {
+                    // Clear the back stack to prevent the user from returning to the login screen
+                    popUpTo(NavRouts.AuthRoute.route) { inclusive = true }
+                }
+            }
+            is Response.Error -> {
+                isLoading.value = false
+                error.value = (Regisresult as Response.Error).message
+                userValidation.value = true
+                Log.d("error", (Regisresult as Response.Error).message)
             }
             Response.Empty -> {
                 Log.d("status", "Empty response")

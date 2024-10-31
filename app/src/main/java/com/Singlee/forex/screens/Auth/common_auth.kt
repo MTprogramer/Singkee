@@ -228,7 +228,7 @@ fun otherSignMethod(btnState:Boolean , isLoading: Boolean  , buttonTitle : Strin
            
            Spacer(modifier = Modifier.height(30.dp))
 
-           button(title = "Sign in" , btnState , button = button  , isLoading = isLoading)
+           button(title = buttonTitle , btnState , button = button  , isLoading = isLoading)
        }
     }
 }

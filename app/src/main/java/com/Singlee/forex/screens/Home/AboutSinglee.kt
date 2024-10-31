@@ -1,6 +1,5 @@
 package com.Singlee.forex.screens.Home
 
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -15,15 +14,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.Singlee.forex.R
-import com.Singlee.forex.ui.theme.hintColor
-import com.Singlee.forex.ui.theme.mediumHint
 import com.Singlee.forex.ui.theme.mediumTitle
 
 
-@Preview
 @Composable
-fun AboutSinglee()
+fun AboutSinglee(navController: NavHostController)
 {
     Column(
         Modifier
@@ -31,7 +28,7 @@ fun AboutSinglee()
             .padding(horizontal = 20.dp, vertical = 25.dp))
     {
         Spacer(modifier = Modifier.height(20.dp))
-        ProfileToolbar(title = "About Singlee") {}
+        ProfileToolbar(title = "About Singlee") {navController.popBackStack()}
         text(id = R.string.aboutSinglee)
         Spacer(modifier = Modifier.height(20.dp))
         Text(

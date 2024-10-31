@@ -1,5 +1,6 @@
 package com.Singlee.forex.screens.Home
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +22,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,12 +34,14 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.Singlee.forex.R
+import com.Singlee.forex.Repo.Response
 import com.Singlee.forex.graph.HomeRoutes
+import com.Singlee.forex.screens.Home.ViewModels.UserViewModel
 import com.Singlee.forex.ui.theme.blue
 import com.Singlee.forex.ui.theme.button_blue
 import com.Singlee.forex.ui.theme.extra_light
@@ -42,8 +50,33 @@ import com.Singlee.forex.ui.theme.titleColor
 
 
 @Composable
-fun StartChat(navController: NavHostController)
+fun StartChat(navController: NavHostController, userViewModel: UserViewModel)
 {
+    val imagesState by userViewModel.rendomUser.collectAsState(initial = Response.Empty)
+
+    val imageUrlList = remember { mutableStateListOf<String>("","","") }
+
+    LaunchedEffect(Unit) {
+        userViewModel.getRendomImages()
+    }
+    LaunchedEffect(imagesState) {
+        when(imagesState)
+        {
+            Response.Empty -> {}
+            is Response.Error -> {
+                Log.d("images","error")
+            }
+            Response.Loading -> {
+                Log.d("images","error")
+            }
+            is Response.Success -> {
+                val data = (imagesState as Response.Success).data
+                imageUrlList.clear()
+                imageUrlList.addAll(data)
+                Log.d("images","success")
+            }
+        }
+    }
 
     Column(Modifier.padding(horizontal = 20.dp)) {
         Text(
@@ -80,9 +113,10 @@ fun StartChat(navController: NavHostController)
                     modifier = Modifier.padding(top = 15.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    resentSender(x = 0)
-                    resentSender(x = -18)
-                    resentSender(x = -36)
+
+                    resentSender(x = 0 , imageUrlList[0])
+                    resentSender(x = -18, s = imageUrlList[1])
+                    resentSender(x = -36, s = imageUrlList[2])
 
                     Column(
                         modifier = Modifier.offset(x = -(15).dp)
@@ -212,7 +246,7 @@ fun StartChat(navController: NavHostController)
 //}
 
 @Composable
-fun resentSender(x : Int)
+fun resentSender(x: Int, s: String)
 {
     Card(
         modifier = Modifier
@@ -222,11 +256,14 @@ fun resentSender(x : Int)
         border = BorderStroke(2.dp, Color.White ),
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background),
+            painter = rememberAsyncImagePainter(
+                model = s,
+                placeholder = painterResource(R.drawable.fake_avtar),  // Placeholder when loading
+                error = painterResource(R.drawable.fake_avtar)  // Error image in case of failure
+            ),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-            colorFilter = ColorFilter.tint(Color.Green)
+            modifier = Modifier.fillMaxSize()
         )
     }
 }

@@ -196,7 +196,7 @@ fun PremiumPlan(navController: NavHostController) {
         Row (horizontalArrangement = Arrangement.End , modifier = Modifier
             .padding(start = 20.dp, end = 20.dp, top = 25.dp)
             .fillMaxWidth()){
-            toolbarButton( Modifier.weight(1f), Alignment.CenterStart,image = R.drawable.cross) {}
+            toolbarButton( Modifier.weight(1f), Alignment.CenterStart,image = R.drawable.cross) {navController.popBackStack()}
         }
         InfoLayout()
         BuildUserCardSlider(userData = prices , points)
@@ -214,7 +214,7 @@ fun toolbarButton(modifier: Modifier, alignment: Alignment, image: Int, function
     Box(modifier = modifier , contentAlignment = alignment)
     {
         Button(
-            onClick = { },
+            onClick = { function.invoke()},
             modifier = Modifier
                 .border(1.dp, color = hintColor, shape = CircleShape)
                 .size(40.dp),

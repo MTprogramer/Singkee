@@ -1,9 +1,13 @@
 package com.Singlee.forex.screens.Home
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +40,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.Singlee.forex.DataModels.UserData
 import com.Singlee.forex.R
 import com.Singlee.forex.Repo.Response
@@ -45,7 +52,7 @@ import com.Singlee.forex.ui.theme.errorStyle
 import com.Singlee.forex.ui.theme.titleColor
 
 @Composable
-fun ProfileSettingScreen(userViewModel: UserViewModel)
+fun ProfileSettingScreen(userViewModel: UserViewModel, navController: NavHostController)
 {
 
     val data by userViewModel.userDataresult.collectAsState(initial = Response.Empty)
@@ -60,33 +67,22 @@ fun ProfileSettingScreen(userViewModel: UserViewModel)
     val name = remember {mutableStateOf("")}
     val email = remember {mutableStateOf("")}
     val password = remember {mutableStateOf("")}
-
-    var user : UserData ? = null
-
-    if (isThirdyParty.value)
-        btnState.value = name.value.isNotEmpty() && user != null
-    else
-        btnState.value = name.value.isNotEmpty() && password.value.isNotEmpty() && user != null
+    val image_url = remember { mutableStateOf("") }
+    var user by remember { mutableStateOf<UserData?>(null) }
 
 
-    userViewModel.getUserData()
 
 
-    LaunchedEffect(data) {
-        when (data) {
-            is Response.Loading -> { Log.d("status", "Loading") }
-            is Response.Success -> {
-                user = (data as Response.Success<UserData>).data
-                user?.let {
-                    name.value = it.name
-                    email.value = it.email
-                    password.value = it.password
-                    Log.d("status", "Success: ${it.email}")
-                }
-
-            }
-            is Response.Error -> { Log.d("error", (data as Response.Error).message) }
-            Response.Empty -> { Log.d("status", "Empty response") }
+    LaunchedEffect(Unit) {
+        user = userViewModel.userData()
+        user?.let {
+            name.value = it.name
+            email.value = it.email
+            password.value = it.password
+            image_url.value = it.profileImage
+            isThirdyParty.value = it.thirdParty
+            Log.d("status", "Success: ${it.email}")
+            Log.d("status", "isThird: ${it.thirdParty}")
         }
     }
 
@@ -110,15 +106,57 @@ fun ProfileSettingScreen(userViewModel: UserViewModel)
     }
 
 
+
+    btnState.value = name.value.isNotEmpty()  && user != null  && if (isThirdyParty.value) true else password.value.isNotEmpty()
+
+    if (isThirdyParty.value)
+        btnState.value = name.value.isNotEmpty() && user != null
+    else
+        btnState.value = name.value.isNotEmpty() && password.value.isNotEmpty() && user != null
+
+
+
+
+    LaunchedEffect(Unit) {
+        user = userViewModel.userData()
+        user?.let {
+            name.value = it.name
+            email.value = it.email
+            password.value = it.password
+            isThirdyParty.value = it.thirdParty
+            Log.d("status", "Success: ${it.email}")
+        }
+    }
+
+
+    LaunchedEffect(update) {
+        when (data) {
+            is Response.Loading -> {
+                isLoading.value = true
+                Log.d("loading", "Loading")
+            }
+            is Response.Success -> {
+                isLoading.value = false
+                Log.d("success", "Success: ${update}")
+            }
+            is Response.Error -> {
+                isLoading.value = false
+                Log.d("error", (data as Response.Error).message)
+            }
+            Response.Empty -> { Log.d("status", "Empty response") }
+        }
+    }
+
+
     Column(Modifier.padding(horizontal = 20.dp , vertical = 25.dp)) {
-        ProfileToolbar("Profile Edit"){}
+        ProfileToolbar("Profile Edit"){navController.popBackStack()}
         Spacer(modifier = Modifier.height(20.dp))
-        CircularImageView()
+        CircularImageView(image_url , userViewModel)
 
         Spacer(modifier = Modifier.height(30.dp))
 
         textField(false , "Name" , name , false ,"" , true)
-        textField(false , "Email" , email , emailValidation.value,"Email not valid" , false)
+//        textField(false , "Email" , email , emailValidation.value,"Email not valid" , false)
         if (!isThirdyParty.value)
             textField(true , "Password" , password , passwordValidation.value , "Password" , true)
 
@@ -128,7 +166,10 @@ fun ProfileSettingScreen(userViewModel: UserViewModel)
             button(
                 title = "Update" ,
                 btnState.value ,
-                button = {userViewModel.updateUserData(userData = user!!)}  ,
+                button = {
+                    val updatedUser = user!!.copy(name = name.value , password = password.value)
+                    userViewModel.updateUserData(userData = updatedUser )
+                         }  ,
                 isLoading = isLoading.value)
         }
     }
@@ -143,6 +184,9 @@ fun textField(isPassword: Boolean, title: String, value: MutableState<String> , 
         mutableStateOf(true)
     }
 
+    if (!isPassword) {
+        isShow.value = false
+    }
 
     TextField(
         value = value.value,
@@ -178,12 +222,28 @@ fun textField(isPassword: Boolean, title: String, value: MutableState<String> , 
 }
 
 @Composable
-fun CircularImageView() {
+fun CircularImageView(image_url: MutableState<String>, userViewModel: UserViewModel) {
+
+    // Image picker launcher
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            image_url.value = it.toString() // Update the image URL
+            userViewModel.updateUserAvtar(image_url.value)
+        }
+    }
+
+
     Box(contentAlignment = Alignment.Center , modifier = Modifier.fillMaxWidth())
     {
         Box(contentAlignment = Alignment.CenterEnd) {
             Image(
-                painter = painterResource(id = R.drawable.fake_avtar),
+                painter = rememberAsyncImagePainter(
+                    model = image_url.value,
+                    placeholder = painterResource(R.drawable.fake_avtar),  // Placeholder when loading
+                    error = painterResource(R.drawable.fake_avtar)
+                ),
                 contentDescription = "Circular Image",
                 modifier = Modifier
                     .size(100.dp)// Size of the image
@@ -195,7 +255,10 @@ fun CircularImageView() {
                 contentDescription = "Circular Image",
                 modifier = Modifier
                     .offset(x = (-10).dp, y = 35.dp)
-                    .border(1.dp, titleColor, CircleShape),
+                    .border(1.dp, titleColor, CircleShape)
+                    .clickable {
+                        launcher.launch("image/*")
+                    },
                 contentScale = ContentScale.Crop // Crop the image if it's larger than the view
             )
         }
@@ -214,7 +277,7 @@ fun ProfileToolbar(title: String, onBack: () -> Unit)
             Modifier.align(Alignment.CenterStart),
             Alignment.CenterStart,
             image = R.drawable.back_icon,
-            function = {onBack})
+            function = {onBack.invoke()})
         Text(
             text = title,
             style =MaterialTheme.typography.titleLarge,

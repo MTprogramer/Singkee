@@ -1,6 +1,12 @@
 package com.Singlee.forex.screens.Home
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,7 +19,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,11 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.Singlee.forex.DataModels.UserData
+import coil.compose.rememberAsyncImagePainter
 import com.Singlee.forex.R
 import com.Singlee.forex.Repo.Response
 import com.Singlee.forex.graph.HomeRoutes
@@ -44,52 +53,89 @@ import com.Singlee.forex.ui.theme.extra_light
 import com.Singlee.forex.ui.theme.red
 import com.Singlee.forex.ui.theme.signalType
 import com.Singlee.forex.ui.theme.titleColor
+import de.cketti.mailto.EmailIntentBuilder
 
-//@Inject
-//lateinit var sharedPrefs: SharedPrefs
 
 @Composable
 fun ProfileScreen(navController: NavHostController, userViewModel: UserViewModel)
 {
+    val context = LocalContext.current
 
-    val data by userViewModel.userDataresult.collectAsState(initial = Response.Empty)
     val name = remember { mutableStateOf("") }
+    val image_url = remember { mutableStateOf("") }
+    val email = remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-        userViewModel.getUserData()
-    }
+    val update by userViewModel.userDataUpdate.collectAsState(initial = Response.Empty)
 
-    LaunchedEffect(data) {
-        when (data) {
+    Log.d("UserProfileScreen", "Current update state: $update")
+
+    LaunchedEffect(update) {
+        when (update) {
             is Response.Loading -> {
                 Log.d("status", "Loading")
             }
             is Response.Success -> {
-                val user = (data as Response.Success<UserData>).data
-                name.value = user.name
-                Log.d("status", "Success: ${user.email} and name is :: ${user.name}")
+                Log.d("status", "Success: ${update}")
             }
             is Response.Error -> {
-                Log.d("error", (data as Response.Error).message)
+                Log.d("error", (update as Response.Error).message)
             }
-            Response.Empty -> {
-                Log.d("status", "Empty response")
-            }
+           is Response.Empty -> { Log.d("status", "Empty response") }
         }
     }
 
-    Column(Modifier.padding(horizontal = 20.dp , vertical = 25.dp))
-    {
-        logput(navController , userViewModel)
-        AvtarDesign(name)
-        Spacer(modifier = Modifier.height(5.dp))
-        itemBox(title = "My Profile", dis = "Your profile and personal information", icon =R.drawable.profile_icon) {navController.navigate(HomeRoutes.ProfileSettingScreen.route)}
-        itemBox(title = "Preferences", dis = "Settings and configurations", icon =R.drawable.prefrences_icon,){navController.navigate(HomeRoutes.PreferencesScreen.route)}
-        itemBox(title = "Privacy policy", dis = "Read Our Terms Privacy Policy", icon =R.drawable.privacy_policy_icon,){}
-        itemBox(title = "About", dis = "About “Singlee App”", icon =R.drawable.about_icon,){}
-        itemBox(title = "Contact us", dis = "If you have any query contact “Singlee”", icon =R.drawable.contectus_icon,){}
-
+    LaunchedEffect(Unit) {
+        name.value = userViewModel.userData().name
+        email.value = userViewModel.userData().email
+        image_url.value = userViewModel.userData().profileImage
     }
+
+
+
+
+    Column(
+        Modifier
+            .padding(horizontal = 20.dp, vertical = 25.dp)
+            .verticalScroll(state = rememberScrollState()))
+            {
+                logput(navController, userViewModel)
+                AvtarDesign(name, image_url, userViewModel)
+                Spacer(modifier = Modifier.height(5.dp))
+                itemBox(
+                    title = "My Profile",
+                    dis = "Your profile and personal information",
+                    icon = R.drawable.profile_icon
+                ) { navController.navigate(HomeRoutes.ProfileSettingScreen.route) }
+                itemBox(
+                    title = "Preferences",
+                    dis = "Settings and configurations",
+                    icon = R.drawable.prefrences_icon
+                ) { navController.navigate(HomeRoutes.PreferencesScreen.route) }
+                itemBox(
+                    title = "Privacy policy",
+                    dis = "Read Our Terms Privacy Policy",
+                    icon = R.drawable.privacy_policy_icon
+                ) { navController.navigate(HomeRoutes.PrivacyPolicy.route) }
+                itemBox(
+                    title = "About",
+                    dis = "About “Singlee App”",
+                    icon = R.drawable.about_icon
+                ) { navController.navigate(HomeRoutes.AboutSinglee.route) }
+                itemBox(
+                    title = "Contact us",
+                    dis = "If you have any query contact “Singlee”",
+                    icon = R.drawable.contectus_icon
+                ) {
+
+                    EmailIntentBuilder
+                        .from(context)
+                        .to("singleeteam55@gmail.com")
+                        .subject("Singlee Help Mail")
+                        .start();
+                }
+
+            }
+
 }
 
 
@@ -107,8 +153,8 @@ fun logput(navController: NavHostController, userViewModel: UserViewModel)
             userViewModel.signout()
 
             navController.navigate(NavRouts.AuthRoute.route) {
-                // Clear the back stack to prevent the user from returning to the login screen
-                popUpTo(NavRouts.AuthRoute.route) { inclusive = true }
+                // Clear the back stack to remove all screens
+                popUpTo(navController.graph.startDestinationId) { inclusive = true }
             }
         })
         {
@@ -124,17 +170,38 @@ fun logput(navController: NavHostController, userViewModel: UserViewModel)
 }
 
 @Composable
-fun AvtarDesign(name: MutableState<String>)
+fun AvtarDesign(
+    name: MutableState<String>,
+    image_url: MutableState<String>,
+    userViewModel: UserViewModel
+)
 {
+    // Image picker launcher
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            image_url.value = it.toString() // Update the image URL
+            userViewModel.updateUserAvtar(image_url.value)
+        }
+    }
+
+
+
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
-                painter = painterResource(id = R.drawable.fake_avtar),
-                contentDescription = null ,
-                Modifier
+                painter = rememberAsyncImagePainter(
+                    model = image_url.value,
+                    placeholder = painterResource(R.drawable.fake_avtar),  // Placeholder when loading
+                    error = painterResource(R.drawable.fake_avtar)
+                ),
+                contentDescription = null,
+                modifier = Modifier
                     .size(108.dp)
                     .clip(RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop)
+                contentScale = ContentScale.Crop
+            )
 
             Spacer(modifier = Modifier.width(15.dp))
 
@@ -152,6 +219,9 @@ fun AvtarDesign(name: MutableState<String>)
                     Modifier
                         .size(26.dp)
                         .clip(RoundedCornerShape(20.dp))
+                        .clickable {
+                            launcher.launch("image/*")
+                        }
                 )
             }
 

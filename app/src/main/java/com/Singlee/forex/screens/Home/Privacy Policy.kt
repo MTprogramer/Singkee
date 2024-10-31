@@ -16,9 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.Singlee.forex.R
 import com.Singlee.forex.ui.theme.mediumTitle
 import com.Singlee.forex.ui.theme.titleColor
@@ -45,7 +45,7 @@ val choiceList = listOf(
 )
 
 @Composable
-fun PrivacyPolicy()
+fun PrivacyPolicy(navController: NavHostController)
 {
     Column(
         Modifier
@@ -53,7 +53,7 @@ fun PrivacyPolicy()
             .padding(horizontal = 20.dp, vertical = 25.dp))
     {
         Spacer(modifier = Modifier.height(20.dp))
-        ProfileToolbar(title = "Privacy Policy") {}
+        ProfileToolbar(title = "Privacy Policy") {navController.popBackStack()}
 
         //into
         Text(

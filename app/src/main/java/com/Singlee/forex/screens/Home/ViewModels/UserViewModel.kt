@@ -1,5 +1,6 @@
 package com.Singlee.forex.screens.Home.ViewModels
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.Singlee.forex.DataModels.SettingData
@@ -10,6 +11,7 @@ import com.Singlee.forex.Utils.SharedPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,6 +28,18 @@ class UserViewModel @Inject constructor(
     val profileSetting: Flow<Response<SettingData>> = _profileSetting
     private val _userDataUpdate = MutableStateFlow<Response<Boolean>>(Response.Empty)
     val userDataUpdate: Flow<Response<Boolean>> = _userDataUpdate
+    private val _rendomUser = MutableStateFlow<Response<List<String>>>(Response.Empty)
+    val rendomUser: Flow<Response<List<String>>> = _rendomUser
+
+
+
+
+    fun getRendomImages() = viewModelScope.launch {
+        _rendomUser.value = Response.Loading
+        userRepo.getRandomThreeUsersImageUrls().collect{
+            _rendomUser.value = it
+        }
+    }
 
     fun updateUserData(userData: UserData) = viewModelScope.launch {
         _userDataUpdate.value = Response.Loading
@@ -33,9 +47,20 @@ class UserViewModel @Inject constructor(
             _userDataUpdate.value = result
         }
     }
+    fun userData() : UserData = sharedPrefs.getUser()
 
-    fun updateSettingData(userData: SettingData) = viewModelScope.launch {
+    fun userSetting() : SettingData = sharedPrefs.getProfilePref()
+    fun updateUserAvtar(image: String) = viewModelScope.launch {
         _userDataUpdate.value = Response.Loading
+        userRepo.updateAvtar(image).collect{result ->
+            _userDataUpdate.value = result
+        }
+    }
+
+    fun updateSettingData(setting: SettingData) = viewModelScope.launch {
+        _userDataUpdate.value = Response.Loading
+        var userData = sharedPrefs.getUser()
+        userData = userData.copy(settingData = setting)
         userRepo.updateSettingData(userData).collect{result ->
             _userDataUpdate.value = result
         }

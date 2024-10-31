@@ -25,6 +25,7 @@ val duble_extra_light = Color(0x405D6166)
 
 val titleColor = Color(0xFFAFB4BB)
 val white = Color(0xFFFFFFFF)
+val gold = Color(0xFFAA820B)
 val mediumTitle = Color(0xFF9FA7B2)
 val editextbg = Color(0x05FFFFFF)
 val focusEditextbg = Color(0x0FFFFFFF)

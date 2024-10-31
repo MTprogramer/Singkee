@@ -14,11 +14,48 @@
       },
       "oauth_client": [
         {
-          "client_id": "824064639633-00a49olu3btltklfrev210ee4j0nl3r9.apps.googleusercontent.com",
+          "client_id": "824064639633-gq8gcujh2qlj8qgq14gaqvfg1bf2pk42.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.Singlee.forex",
-            "certificate_hash": "ca0a2be0f3fa7fac7a5822490d591389e4207ec6"
+            "certificate_hash": "5c2673c230937e2deddff3721435b906384ece3b"
+          }
+        },
+        {
+          "client_id": "824064639633-prdspjjem1gfg1cnshhhk2k72ht04tfb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA48ZPNbqSBfgJm8lulIe9ffk8VsjNH-6Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "824064639633-prdspjjem1gfg1cnshhhk2k72ht04tfb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824064639633:android:eb945cf96032eb0215b530",
+        "android_client_info": {
+          "package_name": "com.example.signleeadmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "824064639633-90fg6vcp28v5hct3f49k4g06drigc66f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.signleeadmin",
+            "certificate_hash": "5c2673c230937e2deddff3721435b906384ece3b"
           }
         },
         {

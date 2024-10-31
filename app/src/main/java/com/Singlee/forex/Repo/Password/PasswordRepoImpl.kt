@@ -1,6 +1,8 @@
 package com.Singlee.forex.Repo.Password
 
+import android.content.Context
 import com.Singlee.forex.Repo.Response
+import com.Singlee.forex.Utils.SharedPrefs
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +11,9 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class PasswordRepoImpl @Inject constructor(
-  private val firebaseAuth: FirebaseAuth
+    private val firebaseAuth: FirebaseAuth,
+    context: Context,
+    sharedPrefs: SharedPrefs
 ) : PasswordRepo {
 
     override suspend fun resetPassword(email: String): Flow<Response<Void?>> = flow {

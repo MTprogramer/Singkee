@@ -13,6 +13,8 @@ interface UserRepo
     suspend fun resetUserPass (user : AuthResult , password : String) : Flow<Response<String>>
     suspend fun userExists(email: String , navController: NavController): Flow<Response<Boolean>>
     suspend fun updateUserData(userData: UserData) : Flow<Response<Boolean>>
-    suspend fun updateSettingData(SettingData: SettingData) : Flow<Response<Boolean>>
+    suspend fun updateSettingData(userData: UserData) : Flow<Response<Boolean>>
+    suspend fun updateAvtar(imageUri : String) : Flow<Response<Boolean>>
+    suspend fun getRandomThreeUsersImageUrls() : Flow<Response<List<String>>>
     suspend fun logout()
 }

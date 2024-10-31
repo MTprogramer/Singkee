@@ -139,14 +139,14 @@ fun signUpScreen(navController: NavController, authViewModel: AuthViewModel)
             editextBox(password, true , Modifier.padding(0.dp, 16.dp, 0.dp, 8.dp) , "Password" , passValidation.value , "Password must contain one digit one number one capital letter and one spacial char")
             editextBox(confirmPass, true , Modifier.padding(0.dp, 16.dp, 0.dp, 8.dp) , "Confirm Password", passMatch.value,error.value)
 
-            otherSignMethod(btnState.value , isLoading.value ,"Sign up",{
-
-
+            otherSignMethod(btnState.value , isLoading.value ,"Sign up", facebook = {
                 authViewModel.signInWithFacebook(context as MainActivity)
 
-            },{
+            },
+            google = {
                 authViewModel.googleSignIn(credentialManager,context, Constant.clint_ID)
-            },{
+            },
+            button = {
                 emailValidation.value = !email.value.isValidEmail()
                 passMatch.value = password.value != confirmPass.value
                 passValidation.value = ((password.value.length >= 8 && hasNumber(password.value)) && (hasCapitalLetter(password.value) && hasSpecialCharacter(password.value))).not()

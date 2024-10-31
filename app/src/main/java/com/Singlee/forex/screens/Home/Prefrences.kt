@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.Singlee.forex.DataModels.SettingData
 import com.Singlee.forex.Repo.Response
 import com.Singlee.forex.screens.Home.ViewModels.UserViewModel
@@ -42,35 +43,32 @@ import com.Singlee.forex.ui.theme.titleColor
 
 
 @Composable
-fun Prefrences(userViewModel: UserViewModel)
+fun Prefrences(userViewModel: UserViewModel, navController: NavHostController)
 {
-
-    val settingData by userViewModel.profileSetting.collectAsState(initial = Response.Empty)
     val settingUpdate by userViewModel.userDataUpdate.collectAsState(initial = Response.Empty)
+    var remderUi by remember {
+        mutableStateOf(false)
+    }
     userViewModel.getSettingData()
 
-    val data = remember {mutableStateOf(SettingData())}
+    val data = remember {mutableStateOf<SettingData>(SettingData())}
 
-    LaunchedEffect(settingData)
+    LaunchedEffect(Unit)
     {
-        when(settingData)
-        {
-            Response.Empty -> TODO()
-            is Response.Error -> TODO()
-            Response.Loading -> TODO()
-            is Response.Success -> {
-                data.value = (settingData as Response.Success<SettingData>).data
-            }
-        }
+        data.value = userViewModel.userSetting()
+        remderUi = true
+        Log.d("get",data.value.toString())
     }
 
     LaunchedEffect(settingUpdate) {
         when(settingUpdate){
-            Response.Empty -> TODO()
+            Response.Empty -> {
+            }
             is Response.Error ->{
                 Log.d("updateSetting", (settingUpdate as Response.Error).message)
             }
-            Response.Loading -> TODO()
+            Response.Loading -> {
+            }
             is Response.Success -> {
                 Log.d("updateSetting","success")
             }
@@ -88,32 +86,58 @@ fun Prefrences(userViewModel: UserViewModel)
 
     Column(Modifier.padding(horizontal = 20.dp , vertical = 25.dp)) {
 
-        ProfileToolbar("Preferences"){}
+        ProfileToolbar("Preferences") {navController.popBackStack()}
 
         Text(
             text = "Notifications",
-            style =MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge,
             fontSize = 20.sp,
             modifier = Modifier.padding(vertical = 20.dp),
             color = titleColor
         )
-        itemBox("New Signal", "Enable to see new signal notifications", data.value.signal) { res ->
-            onSwitchChange(data.value) { it.copy(signal = res) }
-        }
-        itemBox("Chat Notification", "Enable to see chat messages notifications", data.value.chat_Notifications) {res ->
-            onSwitchChange(data.value) { it.copy(chat_Notifications = res) }
-        }
-        itemBox("Support Notification", "Enable to see support notifications", data.value.support_Notifications) {res ->
-            onSwitchChange(data.value) { it.copy(support_Notifications = res) }
-        }
-        itemBox("Progress Notification", "Enable to see progress notifications", data.value.progress_Notifications) {res ->
-            onSwitchChange(data.value) { it.copy(progress_Notifications = res) }
-        }
-        itemBox("Offers Notification", "Enable to see offers notifications", data.value.offer_Notifications) {res ->
-            onSwitchChange(data.value) { it.copy(offer_Notifications = res) }
-        }
-        itemBox("Team Messages", "Enable to see team messages notifications", data.value.team_Notifications) {res ->
-            onSwitchChange(data.value) { it.copy(team_Notifications = res) }
+        if (remderUi) {
+            itemBox(
+                "New Signal",
+                "Enable to see new signal notifications",
+                data.value.signal
+            ) { res ->
+                onSwitchChange(data.value) { it.copy(signal = res) }
+            }
+            itemBox(
+                "Chat Notification",
+                "Enable to see chat messages notifications",
+                data.value.chat_Notifications
+            ) { res ->
+                onSwitchChange(data.value) { it.copy(chat_Notifications = res) }
+            }
+            itemBox(
+                "Support Notification",
+                "Enable to see support notifications",
+                data.value.support_Notifications
+            ) { res ->
+                onSwitchChange(data.value) { it.copy(support_Notifications = res) }
+            }
+            itemBox(
+                "Progress Notification",
+                "Enable to see progress notifications",
+                data.value.progress_Notifications
+            ) { res ->
+                onSwitchChange(data.value) { it.copy(progress_Notifications = res) }
+            }
+            itemBox(
+                "Offers Notification",
+                "Enable to see offers notifications",
+                data.value.offer_Notifications
+            ) { res ->
+                onSwitchChange(data.value) { it.copy(offer_Notifications = res) }
+            }
+            itemBox(
+                "Team Messages",
+                "Enable to see team messages notifications",
+                data.value.team_Notifications
+            ) { res ->
+                onSwitchChange(data.value) { it.copy(team_Notifications = res) }
+            }
         }
     }
 }

@@ -70,6 +70,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -88,6 +90,7 @@ dependencies {
 
     implementation("com.facebook.android:facebook-login:17.0.0")
 
+    implementation("com.google.code.gson:gson:2.11.0")
 
     implementation("androidx.credentials:credentials:1.2.2")
     implementation("androidx.credentials:credentials-play-services-auth:1.2.0")
@@ -106,6 +109,15 @@ dependencies {
     //mail sender
     implementation("com.sun.mail:android-mail:1.6.6")
     implementation("com.sun.mail:android-activation:1.6.7")
+
+
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+
+
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
+    implementation("de.cketti.mailto:email-intent-builder:2.0.0")
 
 }
 kapt {

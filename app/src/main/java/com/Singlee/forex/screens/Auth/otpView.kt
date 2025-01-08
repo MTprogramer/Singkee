@@ -146,7 +146,6 @@ private fun otpBox(
 
     Otp(
         count = 6,
-        error = false,
         success = true,
         successColor = editextbg,
         focusedColor = Color.Gray,

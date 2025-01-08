@@ -22,43 +22,7 @@ private val LightColorScheme = lightColorScheme(
     secondary = PurpleGrey40,
     tertiary = Pink40,
     background = statusBar
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
 )
-
-//@Composable
-//fun ChangeSystemBarsTheme(lightTheme: Boolean) {
-//    val barColor = MaterialTheme.colorScheme.background.toArgb()
-//    LaunchedEffect(lightTheme) {
-//        if (lightTheme) {
-//            enableEdgeToEdge(
-//                statusBarStyle = SystemBarStyle.light(
-//                    barColor, barColor,
-//                ),
-//                navigationBarStyle = SystemBarStyle.light(
-//                    barColor, barColor,
-//                ),
-//            )
-//        } else {
-//            enableEdgeToEdge(
-//                statusBarStyle = SystemBarStyle.dark(
-//                    barColor,
-//                ),
-//                navigationBarStyle = SystemBarStyle.dark(
-//                    barColor,
-//                ),
-//            )
-//        }
-//    }
-//}
 
 @Composable
 fun SignalProviderTheme(

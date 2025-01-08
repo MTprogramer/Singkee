@@ -1,5 +1,7 @@
 package com.Singlee.forex.screens.Home
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,6 +31,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -73,6 +76,27 @@ val list = listOf(
     "Consistent Engagement"
 )
 
+@Composable
+fun cardCarouselTransition(page: Int, pagerState: PagerState): Modifier {
+    val pageOffset =
+        ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
+
+    // Animate scale from 0.8 (min size) to 1.0 (normal size) when moving between pages
+    val scale by animateFloatAsState(
+        targetValue = if (pageOffset > 0.5f) 0.8f else 1f, // Shrink when offset > 0.5
+        animationSpec = tween(durationMillis = 300), label = "" // Customize the animation duration
+    )
+
+    // Adjust transparency based on the scaling factor
+    val alpha = if (pageOffset > 0.5f) 0.7f else 1f
+
+    return Modifier.graphicsLayer {
+        this.alpha = alpha
+        scaleX = scale
+        scaleY = scale
+    }
+}
+
 
 @OptIn(ExperimentalFoundationApi::class)
 fun Modifier.carouselTransition(page: Int, pagerState: PagerState) =
@@ -111,6 +135,7 @@ fun  BuildUserCardSlider(userData: List<PlanInfo>, points: List<List<String>>) {
                        .fillMaxWidth()
                        .padding(10.dp)
                        .carouselTransition(page, pagerState) // Apply the carousel transition modifier
+//                       .then(cardCarouselTransition(page, pagerState))
                ) {
                    Column(
                        modifier = Modifier

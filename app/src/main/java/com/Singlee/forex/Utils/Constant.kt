@@ -15,6 +15,8 @@ object Constant
 {
     const val clint_ID ="824064639633-prdspjjem1gfg1cnshhhk2k72ht04tfb.apps.googleusercontent.com"
 
+//    824064639633-prdspjjem1gfg1cnshhhk2k72ht04tfb.apps.googleusercontent.com
+
     //user data
     val LOGGED_IN = "LOGGED_IN"
     val SUBSCRIBED = "SUBSCRIBED"

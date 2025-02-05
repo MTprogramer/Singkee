@@ -9,7 +9,7 @@ plugins {
 sonarqube {
     properties {
         property("sonar.projectKey", "mtprogramer_Singkee")
-        property("sonar.organization", "mtprogramer")
+        property("sonar.organization", "MTprogramer_Singkee")
         property("sonar.host.url", "https://sonarcloud.io")
     }
 }

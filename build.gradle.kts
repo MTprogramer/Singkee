@@ -6,10 +6,10 @@ plugins {
     alias(libs.plugins.google.gms.google.services) apply false
     id("org.sonarqube") version "6.0.1.5171"
 }
-sonarqube {
-    properties {
-        property("sonar.projectKey", "mtprogramer_Singkee")
-        property("sonar.organization", "MTprogramer_Singkee")
-        property("sonar.host.url", "https://sonarcloud.io")
-    }
-}
+//sonarqube {
+//    properties {
+//        property("sonar.projectKey", "mtprogramer_Singkee")
+//        property("sonar.organization", "MTprogramer_Singkee")
+//        property("sonar.host.url", "https://sonarcloud.io")
+//    }
+//}

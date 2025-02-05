@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
     alias(libs.plugins.google.gms.google.services)
     id("org.sonarqube")
+
 }
 
 android {

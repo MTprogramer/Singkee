@@ -4,6 +4,7 @@ plugins {
     id ("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.kapt")
     alias(libs.plugins.google.gms.google.services)
+    id("org.sonarqube")
 
 }
 

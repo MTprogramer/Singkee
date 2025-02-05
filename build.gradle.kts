@@ -13,6 +13,3 @@ sonarqube {
         property("sonar.host.url", "https://sonarcloud.io")
     }
 }
-subprojects {
-    apply(plugin = "org.sonarqube") // This applies SonarQube to subprojects
-}

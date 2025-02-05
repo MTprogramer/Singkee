@@ -12,16 +12,6 @@ android {
     namespace = "com.Singlee.forex"
     compileSdk = 35
 
-
-    sonarqube {
-        properties {
-            property("sonar.projectKey", "mtprogramer_Singkee")
-            property("sonar.organization", "mtprogramer")
-            property("sonar.host.url", "https://sonarcloud.io")
-        }
-    }
-
-
     defaultConfig {
         applicationId = "com.Singlee.forex"
         minSdk = 24

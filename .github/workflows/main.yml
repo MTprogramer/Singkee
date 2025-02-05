@@ -19,6 +19,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
+          distribution: 'temurin'
 
       - name: Run SonarCloud Scan  # Runs SonarCloud to analyze code quality
         run: ./gradlew app:sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}

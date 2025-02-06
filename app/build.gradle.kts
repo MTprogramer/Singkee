@@ -4,7 +4,7 @@ plugins {
     id ("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.kapt")
     alias(libs.plugins.google.gms.google.services)
-//    id("org.sonarqube")
+    id("org.sonarqube")
 
 }
 
@@ -84,10 +84,10 @@ dependencies {
     implementation(libs.play.services.auth)
 
 
-    implementation("androidx.compose.material:material:1.7.6")
+    implementation("androidx.compose.material:material:1.7.7")
     implementation ("com.google.accompanist:accompanist-swiperefresh:0.35.1-alpha")
 
-    implementation("androidx.compose.foundation:foundation:1.6.8") // Adjust version as needed
+    implementation("androidx.compose.foundation:foundation:1.7.7") // Adjust version as needed
 
 //    implementation(libs.facebook.android.sdk)
 //    implementation("com.facebook.android:facebook-android-sdk:latest.release")
@@ -96,13 +96,13 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.11.0")
 
-    implementation("androidx.credentials:credentials:1.2.2")
-    implementation("androidx.credentials:credentials-play-services-auth:1.2.0")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
 
     implementation("com.github.ehsannarmani:OtpCompose:0.0.4")
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.navigation:navigation-compose:2.8.6")
 
     // Dagger Hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
@@ -116,7 +116,7 @@ dependencies {
 
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    kapt("com.github.bumptech.glide:compiler:4.15.1")
 
 
 

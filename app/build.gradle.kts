@@ -1,6 +1,3 @@
-import com.android.build.api.dsl.Lint
-import com.android.build.api.dsl.LintOptions
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -29,12 +26,12 @@ android {
     }
 
     // Use the `lint` block instead of the deprecated `lintOptions` block
-    lint {
-        checkAllWarnings = true // Check all issues, including those off by default
-        abortOnError = true // Stop the build if errors are found
-        warningsAsErrors = false // Treat warnings as warnings (not errors)
-        baseline = file("lint-baseline.xml") // Use a baseline to ignore pre-existing issues
-    }
+//    lint {
+//        checkAllWarnings = true // Check all issues, including those off by default
+//        abortOnError = true // Stop the build if errors are found
+//        warningsAsErrors = false // Treat warnings as warnings (not errors)
+//        baseline = file("lint-baseline.xml") // Use a baseline to ignore pre-existing issues
+//    }
 
     buildTypes {
         release {
@@ -58,6 +55,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
+//    configurations.all {
+//        exclude(group = "io.grpc", module = "grpc-core")
+//    }
+
+
     packaging {
         resources {
             excludes += setOf(
@@ -95,7 +97,6 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.play.services.auth)
 
-
     implementation("androidx.compose.material:material:1.7.7")
     implementation ("com.google.accompanist:accompanist-swiperefresh:0.35.1-alpha")
 
@@ -128,7 +129,7 @@ dependencies {
 
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
-    kapt("com.github.bumptech.glide:compiler:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 
 
 

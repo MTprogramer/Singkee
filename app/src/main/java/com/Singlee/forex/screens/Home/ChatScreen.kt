@@ -87,6 +87,7 @@ import java.util.UUID
         oppositeReply(isShowProfile =true, message = Message(content = "hello" , senderName = "Ali Hassan" , author = true ))
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
 fun ChatScreen(messageViewModel: ChatViewModel, navController: NavHostController)
 {

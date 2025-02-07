@@ -27,7 +27,6 @@ import com.Singlee.forex.screens.Home.ViewModels.ChatViewModel
 import com.Singlee.forex.screens.Home.ViewModels.SignalVideoModel
 import com.google.gson.Gson
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.homeNav(
     navController: NavHostController,
     authViewModel: AuthViewModel,

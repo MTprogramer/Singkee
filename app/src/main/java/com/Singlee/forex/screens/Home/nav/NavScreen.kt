@@ -22,7 +22,6 @@ import com.Singlee.forex.ui.theme.extra_light
 
 val currentRoute=   mutableStateOf(HomeRoutes.HomeRoute.route)
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavScreen(navController: NavHostController, signalViewModel: SignalVideoModel)
 {

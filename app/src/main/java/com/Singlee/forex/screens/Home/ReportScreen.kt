@@ -50,7 +50,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ReportScreen(navController: NavHostController, signalViewModel: SignalVideoModel) {
     LaunchedEffect(Unit) {

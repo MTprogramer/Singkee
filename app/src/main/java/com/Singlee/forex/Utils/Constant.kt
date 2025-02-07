@@ -54,7 +54,6 @@ object Constant
         return dateFormat.format(date)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun <T : Any> groupSignalsByDate(signals: List<T>, timestampExtractor: (T) -> Timestamp?): Map<String, List<T>> {
         val today = LocalDate.now()
         val yesterday = today.minusDays(1)

@@ -95,12 +95,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // Since Android Oreo (8.0), a notification channel is needed
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId, "singleeChannel", NotificationManager.IMPORTANCE_DEFAULT
-            )
+            val channel = NotificationChannel(channelId, "singleeChannel", NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(channel)
-        }
+
 
         // Show the notification
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())

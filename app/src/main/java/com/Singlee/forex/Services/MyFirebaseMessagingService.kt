@@ -98,7 +98,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val channel = NotificationChannel(channelId, "singleeChannel", NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(channel)
 
-
         // Show the notification
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }

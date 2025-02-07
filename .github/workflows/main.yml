@@ -46,7 +46,7 @@ jobs:
 
   instumentation-test:
     needs:
-      - unit-test
+      - testMera
     runs-on: macos-latest
     steps:
       - name: Checkout code

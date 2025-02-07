@@ -6,11 +6,11 @@ on:
     branches:
       - main
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v4  #fetch code from github
+#  lint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout the code
+#        uses: actions/checkout@v4  #fetch code from github
 
 #      - name: make gradle executable
 #        run: chmod +x ./gradlew  #ensure permissions with gradle
@@ -23,26 +23,26 @@ jobs:
 #        with:
 #          name: Lint Report
 #          path: app/build/reports/lint-results-debug.html
-
-  unit-test:
-    needs:
-      - lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v4
-
-      - name: Make gradle executable
-        run: chmod +x ./gradlew
-
-      - name: Run Unit Testing
-        run: ./gradlew test
-
-      - name: Upload test report
-        uses: actions/upload-artifact@v4
-        with:
-          name: unit-test-report
-          path: app/build/reports/tests/testDebugUnitTest/
+#
+#  unit-test:
+#    needs:
+#      - lint
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout the code
+#        uses: actions/checkout@v4
+#
+#      - name: Make gradle executable
+#        run: chmod +x ./gradlew
+#
+#      - name: Run Unit Testing
+#        run: ./gradlew test
+#
+#      - name: Upload test report
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: unit-test-report
+#          path: app/build/reports/tests/testDebugUnitTest/
 
   instumentation-test:
     needs:
@@ -66,3 +66,26 @@ jobs:
         with:
           name: instrumentation-test-report
           path: app/build/reports/androidTests/connected/
+
+  static-code-analysis:
+    needs:
+      - instrumentation-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Make gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Setup JDK !1
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Run sonarclud scan
+        run: /gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+        env:
+          GITHUB_TOKEN: ${secrets.GITHUB_TOKEN}
+

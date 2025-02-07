@@ -48,7 +48,6 @@ jobs:
 #    needs:
 #      - unit-test
     runs-on: macos-11
-    if: ${{ false }}
     timeout-minutes: 60
     strategy:
       matrix:

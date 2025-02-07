@@ -25,9 +25,9 @@ jobs:
       - name: Run android lint
         run: ./gradlew lint   #Start Lint to detect code quality
 
-      - name: Upload lint Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: Lint Report
-          path: app/build/reports/lint-results-debug.html
+#      - name: Upload lint Report
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: Lint Report
+#          path: app/build/reports/lint-results-debug.html
 

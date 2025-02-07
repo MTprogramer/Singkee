@@ -12,13 +12,6 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4  #fetch code from github
 
-#      - name: Set up JDK 17  # Installs Java Development Kit (JDK) required for building the project
-#        uses: actions/setup-java@v3
-#        with:
-#             distribution: 'temurin'  # Uses the Temurin JDK distribution
-#             java-version: '17'  # Specifies Java 17
-
-
       - name: make gradle executable
         run: chmod +x ./gradlew  #ensure permissions with gradle
 
@@ -26,8 +19,50 @@ jobs:
         run: ./gradlew lint   #Start Lint to detect code quality
 
       - name: Upload lint Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4 # Upload artifact
         with:
           name: Lint Report
           path: app/build/reports/lint-results-debug.html
 
+  unit-test:
+    needs:
+      - lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: action/checkout@v4
+
+      - name: Make gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Run Unit Testing
+        run: ./gradlew test
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: app/build/reports/tests/testDebugUnitTest/
+
+  instumentation-test:
+    needs:
+      - unit-test
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Make gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Run instrumentation test  # run emulator for instrument tests
+        uses: reactivecircus/android-emulator-runner@v4
+        with:
+          api-level : 29
+          script: ./gradlew connectedCheck
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: instrumentation-test-report
+          path: app/build/reports/androidTests/connected/

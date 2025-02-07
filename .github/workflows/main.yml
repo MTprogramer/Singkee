@@ -87,6 +87,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+          distribution: 'temurin'
 
       - name: Run sonarclud scan
         run: /gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}

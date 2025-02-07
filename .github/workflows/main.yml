@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2  #fetch code from github
+        uses: actions/checkout@v4  #fetch code from github
 
       - name: make gradle executable
         run: chmod +x ./gradlew  #ensure permissions with gradle
@@ -19,7 +19,7 @@ jobs:
         run: ./gradlew lint   #Start Lint to detect code quality
 
       - name: Upload lint Report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Lint Report
           path: app/build/reports/lint-results-debug.html

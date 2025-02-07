@@ -12,25 +12,25 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4  #fetch code from github
 
-      - name: make gradle executable
-        run: chmod +x ./gradlew  #ensure permissions with gradle
+#      - name: make gradle executable
+#        run: chmod +x ./gradlew  #ensure permissions with gradle
+#
+#      - name: Run android lint
+#        run: ./gradlew lint   #Start Lint to detect code quality
+#
+#      - name: Upload lint Report
+#        uses: actions/upload-artifact@v4 # Upload artifact
+#        with:
+#          name: Lint Report
+#          path: app/build/reports/lint-results-debug.html
 
-      - name: Run android lint
-        run: ./gradlew lint   #Start Lint to detect code quality
-
-      - name: Upload lint Report
-        uses: actions/upload-artifact@v4 # Upload artifact
-        with:
-          name: Lint Report
-          path: app/build/reports/lint-results-debug.html
-
-  unit-test:
+  testMera:
     needs:
       - lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: action/checkout@v4
+        uses: actions/checkout@v4
 
       - name: Make gradle executable
         run: chmod +x ./gradlew

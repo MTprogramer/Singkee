@@ -65,7 +65,11 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level : 29
+          target: google_apis  # Use Google APIs instead of AOSP
+          arch: x86_64  # 64-bit architecture
+          profile: pixel_4  #
           script: ./gradlew connectedCheck
+
 
       - name: Upload test report
         uses: actions/upload-artifact@v4

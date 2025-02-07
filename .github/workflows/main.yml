@@ -51,7 +51,7 @@ jobs:
     timeout-minutes: 60
     strategy:
       matrix:
-        api-level: [ 28 ]
+        api-level: [ 30 ]
         target: [ google_apis ]
     steps:
         - name: Checkout

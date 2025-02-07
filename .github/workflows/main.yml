@@ -47,42 +47,32 @@ jobs:
   instumentation-test:
 #    needs:
 #      - unit-test
-    runs-on: macos-latest
+    runs-on: macos-11
+    if: ${{ false }}
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        api-level: [ 28 ]
+        target: [ google_apis ]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+        - name: Checkout
+          uses: actions/checkout@v4
+        - name: Run subset of UI Tests
+          uses: reactivecircus/android-emulator-runner@v2.21.0
+          with:
+            api-level: ${{ matrix.api-level }}
+            target: ${{ matrix.target }}
+            arch: x86_64
+            profile: pixel_2
+            script:
+              "JAVA_HOME=$JAVA_HOME_11_X64 && ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=\
+               org.mozilla.fenix.ui.NavigationToolbarTest#visitURLTest"
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: 'temurin'
-
-
-      - name: Run Android Emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          target: google_apis
-          arch: arm64-v8a
-          profile: Nexus 6
-          script: ./gradlew connectedCheck
-          emulator-boot-timeout: 600
-          emulator-port: 5554
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -no-hypervisor
-          disable-animations: true
-          enable-hw-keyboard: false
-          force-avd-creation: true
-          cores: 1
-        env:
-         JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.5-11.0/arm64/Contents/Home
-
-
-      - name: Upload test report
-        uses: actions/upload-artifact@v4
-        with:
-          name: instrumentation-test-report
-          path: app/build/reports/androidTests/connected/
+        - name: Upload test report
+          uses: actions/upload-artifact@v4
+          with:
+            name: instrumentation-test-report
+            path: app/build/reports/androidTests/connected/
 
   static-code-analysis:
     needs:

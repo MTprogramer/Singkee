@@ -58,8 +58,6 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
-      - name: Install dependencies
-        run: sdkmanager --licenses && sdkmanager --install "build-tools;30.0.3" "platform-tools" "emulator" "system-images;android-30;google_apis;arm64-v8a"
 
       - name: Run Android Emulator
         uses: reactivecircus/android-emulator-runner@v2

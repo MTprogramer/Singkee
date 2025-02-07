@@ -15,6 +15,7 @@ jobs:
       - name: Set up JDK 17  # Installs Java Development Kit (JDK) required for building the project
         uses: actions/setup-java@v3
         with:
+             distribution: 'temurin'  # Uses the Temurin JDK distribution
              java-version: '17'  # Specifies Java 17
 
 

@@ -1,3 +1,6 @@
+import com.android.build.api.dsl.Lint
+import com.android.build.api.dsl.LintOptions
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -24,6 +27,15 @@ android {
             useSupportLibrary = true
         }
     }
+
+    // Use the `lint` block instead of the deprecated `lintOptions` block
+    lint {
+        checkAllWarnings = true // Check all issues, including those off by default
+        abortOnError = true // Stop the build if errors are found
+        warningsAsErrors = false // Treat warnings as warnings (not errors)
+        baseline = file("lint-baseline.xml") // Use a baseline to ignore pre-existing issues
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false

@@ -59,6 +59,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '11'
+          distribution: 'temurin'
 
       - name: Run instrumentation test  # run emulator for instrument tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -87,7 +88,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-          distribution: 'temurin'
 
       - name: Run sonarclud scan
         run: /gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}

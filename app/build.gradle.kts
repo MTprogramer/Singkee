@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.Singlee.forex"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -43,17 +43,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
 //    configurations.all {
 //        exclude(group = "io.grpc", module = "grpc-core")
@@ -113,8 +113,6 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
-
-    implementation("com.github.ehsannarmani:OtpCompose:0.0.4")
     implementation("androidx.navigation:navigation-compose:2.8.6")
 
     // Dagger Hilt

@@ -3,10 +3,13 @@ package com.Singlee.forex.screens.Home.nav
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -46,27 +49,28 @@ fun NavScreen(navController: NavHostController, signalViewModel: SignalVideoMode
     )
     {PaddingValues ->
 
-        Log.d("route", currentRoute.value)
-        when(currentRoute.value)
-        {
-            HomeRoutes.HomeRoute.route -> AllSignalScreen(
-                navController = navController,
-                signalViewModel = signalViewModel
-            )
-            HomeRoutes.StartChatRoute.route -> StartChat(
-                navController = navController,
-                userViewModel = userViewModel
-            )
-            HomeRoutes.ReportScreen.route -> ReportScreen(
-                navController = navController,
-                signalViewModel = signalViewModel
-            )
-            HomeRoutes.ProfileScreen.route -> ProfileScreen(
-                navController = navController,
-                userViewModel = userViewModel
-            )
+        Box (Modifier.padding(paddingValues = PaddingValues)){
+            Log.d("route", currentRoute.value)
+            when(currentRoute.value)
+            {
+                HomeRoutes.HomeRoute.route -> AllSignalScreen(
+                    navController = navController,
+                    signalViewModel = signalViewModel
+                )
+                HomeRoutes.StartChatRoute.route -> StartChat(
+                    navController = navController,
+                    userViewModel = userViewModel
+                )
+                HomeRoutes.ReportScreen.route -> ReportScreen(
+                    navController = navController,
+                    signalViewModel = signalViewModel
+                )
+                HomeRoutes.ProfileScreen.route -> ProfileScreen(
+                    navController = navController,
+                    userViewModel = userViewModel
+                )
+            }
         }
-
     }
 
 }

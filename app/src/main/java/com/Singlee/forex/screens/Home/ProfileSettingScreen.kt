@@ -155,10 +155,10 @@ fun ProfileSettingScreen(userViewModel: UserViewModel, navController: NavHostCon
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        textField(false , "Name" , name , false ,"" , true)
+        TextFieldComponent(false , "Name" , name , false ,"" , true)
 //        textField(false , "Email" , email , emailValidation.value,"Email not valid" , false)
         if (!isThirdyParty.value)
-            textField(true , "Password" , password , passwordValidation.value , "Password" , true)
+            TextFieldComponent(true , "Password" , password , passwordValidation.value , "Password" , true)
 
         Spacer(modifier = Modifier.height(30.dp))
         Box(modifier = Modifier.fillMaxWidth() , contentAlignment = Alignment.Center)
@@ -177,7 +177,7 @@ fun ProfileSettingScreen(userViewModel: UserViewModel, navController: NavHostCon
 
 
 @Composable
-fun textField(isPassword: Boolean, title: String, value: MutableState<String> , onError: Boolean , info : String , enabled : Boolean )
+fun TextFieldComponent(isPassword: Boolean, title: String, value: MutableState<String>, onError: Boolean, info : String, enabled : Boolean )
 {
 
     val isShow = remember {

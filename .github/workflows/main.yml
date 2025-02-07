@@ -12,11 +12,11 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4  #fetch code from github
 
-      - name: Set up JDK 17  # Installs Java Development Kit (JDK) required for building the project
-        uses: actions/setup-java@v3
-        with:
-             distribution: 'temurin'  # Uses the Temurin JDK distribution
-             java-version: '17'  # Specifies Java 17
+#      - name: Set up JDK 17  # Installs Java Development Kit (JDK) required for building the project
+#        uses: actions/setup-java@v3
+#        with:
+#             distribution: 'temurin'  # Uses the Temurin JDK distribution
+#             java-version: '17'  # Specifies Java 17
 
 
       - name: make gradle executable
@@ -25,9 +25,9 @@ jobs:
       - name: Run android lint
         run: ./gradlew lint   #Start Lint to detect code quality
 
-#      - name: Upload lint Report
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: Lint Report
-#          path: app/build/reports/lint-results-debug.html
+      - name: Upload lint Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lint Report
+          path: app/build/reports/lint-results-debug.html
 

@@ -56,9 +56,6 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Start ADB Server
-      run: $ANDROID_HOME/platform-tools/adb start-server
-
     - name: Start Android Emulator
       uses: reactivecircus/android-emulator-runner@v2
       with:

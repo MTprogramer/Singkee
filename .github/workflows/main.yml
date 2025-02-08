@@ -51,13 +51,31 @@ jobs:
     steps:
         - name: Checkout
           uses: actions/checkout@v4
-        - name: Run subset of UI Tests
+        - name: Set up JDK
+          uses: actions/setup-java@v3
+          with:
+           distribution: 'zulu' # or 'temurin', 'corretto', etc.
+           java-version: '17' # Use the JDK version required by your project
+  
+        - name: Start Android Emulator
           uses: reactivecircus/android-emulator-runner@v2
           with:
-            api-level: 30
-            target: google_apis
-            arch: x86_64
-            profile: pixel_2
+           api-level: 30
+           target: google_apis
+           arch: x86_64
+           profile: pixel_2
+           cores: 2
+           avd-name: test
+           force-avd-creation: true
+           emulator-boot-timeout: 600
+           emulator-port: 5554
+           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+           disable-animations: true
+           disable-spellchecker: false
+           disable-linux-hw-accel: auto
+           enable-hw-keyboard: false
+           channel: stable
+           script: ./gradlew connectedCheck # Add this line to run tests
           
        
           

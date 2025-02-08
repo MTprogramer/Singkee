@@ -47,7 +47,7 @@ jobs:
   instumentation-test:
 #    needs:
 #      - unit-test
-    runs-on: macos-latest
+    runs-on: macos-11
     timeout-minutes: 60
     strategy:
      steps:
@@ -60,9 +60,7 @@ jobs:
             target: ${{ matrix.target }}
             arch: x86_64
             profile: pixel_2
-            script:
-              "JAVA_HOME=$JAVA_HOME_11_X64 && ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=\org.mozilla.fenix.ui.NavigationToolbarTest#visitURLTest"
-
+            script: ./gradlew connectedCheck
         - name: Upload test report
           uses: actions/upload-artifact@v4
           with:

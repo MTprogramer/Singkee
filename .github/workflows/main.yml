@@ -49,8 +49,7 @@ jobs:
 #      - unit-test
     runs-on: macos-11
     timeout-minutes: 60
-    strategy:
-     steps:
+    steps:
         - name: Checkout
           uses: actions/checkout@v4
         - name: Run subset of UI Tests

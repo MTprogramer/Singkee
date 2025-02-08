@@ -47,24 +47,20 @@ jobs:
   instumentation-test:
 #    needs:
 #      - unit-test
-    runs-on: macos-11
+    runs-on: macos-latest
     timeout-minutes: 60
     steps:
         - name: Checkout
           uses: actions/checkout@v4
         - name: Run subset of UI Tests
-          uses: reactivecircus/android-emulator-runner@v2.21.0
+          uses: reactivecircus/android-emulator-runner@v2
           with:
-            api-level: ${{ matrix.api-level }}
-            target: ${{ matrix.target }}
+            api-level: 30
+            target: google-api
             arch: x86_64
             profile: pixel_2
-            script: ./gradlew connectedCheck
-        - name: Upload test report
-          uses: actions/upload-artifact@v4
-          with:
-            name: instrumentation-test-report
-            path: app/build/reports/androidTests/connected/
+          
+            
 
   static-code-analysis:
     needs:

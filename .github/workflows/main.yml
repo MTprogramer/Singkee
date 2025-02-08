@@ -44,47 +44,49 @@ jobs:
 #          name: unit-test-report
 #          path: app/build/reports/tests/testDebugUnitTest/
 
-  instumentation-test:
-#    needs:
-#      - unit-test
+   instumentation-test:
     runs-on: macos-latest
     steps:
-        - name: Checkout
-          uses: actions/checkout@v4
-        - name: Set up JDK
-          uses: actions/setup-java@v3
-          with:
-           distribution: 'zulu' # or 'temurin', 'corretto', etc.
-           java-version: '17' # Use the JDK version required by your project
-  
-        - name: Start ADB Server
-          run: $ANDROID_HOME/platform-tools/adb start-server
+    - name: Checkout
+      uses: actions/checkout@v4
 
-        - name: Start Android Emulator
-          uses: reactivecircus/android-emulator-runner@v2
-          with:
-            api-level: 30
-            target: google_apis
-            arch: arm64-v8a
-            profile: pixel_2
-            cores: 4  # Increased CPU cores
-            avd-name: test
-            force-avd-creation: true
-            emulator-boot-timeout: 600
-            emulator-port: 5554
-            emulator-options: -no-window -gpu swiftshader -no-snapshot -noaudio -no-boot-anim  # Changed GPU mode
-            disable-animations: true
-            disable-spellchecker: false
-            disable-linux-hw-accel: true  # Disabled hardware acceleration
-            enable-hw-keyboard: false
-            channel: stable
-            script: ./gradlew connectedCheck
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Start ADB Server
+      run: $ANDROID_HOME/platform-tools/adb start-server
+
+    - name: Start Android Emulator
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 30
+        target: google_apis
+        arch: arm64-v8a
+        profile: pixel_2
+        cores: 2  # Reduced CPU cores
+        avd-name: test
+        force-avd-creation: true
+        emulator-boot-timeout: 600
+        emulator-port: 5554
+        emulator-options: -no-window -gpu off -no-snapshot -noaudio -no-boot-anim  # Disabled GPU
+        disable-animations: true
+        disable-spellchecker: false
+        disable-linux-hw-accel: true  # Disabled hardware acceleration
+        enable-hw-keyboard: false
+        channel: stable
+        script: ./gradlew connectedCheck
+
+    - name: Configure AVD RAM Size
+      run: echo "hw.ramSize=3072" >> /Users/runner/.android/avd/test.avd/config.ini
        
           
           
             
 
-  static-code-analysis:
+   static-code-analysis:
     needs:
       - instumentation-test
     runs-on: ubuntu-latest

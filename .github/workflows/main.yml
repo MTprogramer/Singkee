@@ -59,6 +59,9 @@ jobs:
             arch: x86_64
             profile: pixel_2
           
+       
+          
+          
             
 
   static-code-analysis:

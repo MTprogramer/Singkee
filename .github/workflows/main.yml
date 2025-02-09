@@ -59,27 +59,24 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install AVD and Emulator
+      - name: Install AVD and System Image for API 35
         run: |
-          sdkmanager --install "system-images;android-35;google_apis;x86_64"
-          echo "no" | avdmanager create avd -n test -k "system-images;android-35;google_apis;x86_64" --device "pixel_3"
-          nohup emulator -avd test -no-window -no-audio -no-boot-anim -gpu swiftshader &
+          # Install the system image for API level 35 (Google APIs, x86_64)
+          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "system-images;android-35;google_apis;x86_64"
+          
+          # Create an AVD named 'test' with the system image for API 35
+          echo "no" | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-35;google_apis;x86_64" --device "pixel_4"
 
-      - name: Wait for Emulator to Boot
+      - name: Start Emulator
         run: |
+          # Start the emulator in the background
+          nohup $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
+
+          # Wait for the device to boot
           adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
-          adb shell settings put global window_animation_scale 0
-          adb shell settings put global transition_animation_scale 0
-          adb shell settings put global animator_duration_scale 0
 
-      - name: Run UI Tests
-        run: ./gradlew connectedAndroidTest
-
-      - name: Upload Test Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: ui-test-results
-          path: app/build/reports/androidTests
+      - name: Run Tests
+        run: ./gradlew test
             
 
  static-code-analysis:

@@ -30,21 +30,32 @@ jobs:
           wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
           unzip cmdline-tools.zip -d ~/android-sdk/cmdline-tools
           mv ~/android-sdk/cmdline-tools/cmdline-tools ~/android-sdk/cmdline-tools/latest
-          echo "export ANDROID_HOME=~/android-sdk" >> $GITHUB_ENV
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+          
+          # Ensure sdkmanager is executable
+          chmod +x ~/android-sdk/cmdline-tools/latest/bin/sdkmanager
+          
+          # Set environment variables correctly
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
-      # Step 4: Accept licenses
+      # Step 4: Verify SDK Manager exists
+      - name: Verify SDK Manager
+        run: |
+          ls -la ~/android-sdk/cmdline-tools/latest/bin
+          ~/android-sdk/cmdline-tools/latest/bin/sdkmanager --version
+
+      # Step 5: Accept licenses
       - name: Accept licenses
         run: |
-          yes | sdkmanager --licenses
+          yes | ~/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
 
-      # Step 5: Install SDK components
+      # Step 6: Install SDK components
       - name: Install SDK components
         run: |
-          sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86"
-          sdkmanager "emulator"
+          ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86"
+          ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "emulator"
 
-      # Step 6: Run the Android Emulator and execute UI tests
+      # Step 7: Run the Android Emulator and execute UI tests
       - name: Run UI tests
         uses: reactivecircus/android-emulator-runner@v2
         with:

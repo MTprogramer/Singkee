@@ -38,6 +38,37 @@ jobs:
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
 
 
+
+
+
+
+      - name: Accept SDK Licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      - name: Install SDK components
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
+
+      - name: Build Android Project
+        run: ./gradlew assembleDebug assembleAndroidTest
+
+      - name: Run UI Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86
+          script: ./gradlew connectedCheck
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot
+          disable-animations: true
+          cores: 2
+          avd-name: test
+          force-avd-creation: true
+          emulator-boot-timeout: 600
+
+
+
     
       # # Step 1: Checkout the code
       # - name: Checkout code

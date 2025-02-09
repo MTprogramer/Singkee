@@ -46,7 +46,6 @@ jobs:
 
  instumentation-test:
   runs-on: ubuntu-20.04  # Use Ubuntu 20.04 to ensure package availability
-
   steps:
   - name: Checkout
     uses: actions/checkout@v4
@@ -71,6 +70,19 @@ jobs:
       sudo apt-get install -y libpulse0 libnss3 libxcomposite1 libxcursor1 libxi6 libxtst6
       sudo apt-get install -y libgl1-mesa-glx libasound2-dev
 
+  - name: Install Android SDK
+    run: |
+      mkdir -p $HOME/android-sdk
+      wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+      unzip commandlinetools-linux-7583922_latest.zip -d $HOME/android-sdk
+      rm commandlinetools-linux-7583922_latest.zip
+      yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --licenses
+      $HOME/android-sdk/cmdline-tools/bin/sdkmanager --update
+      $HOME/android-sdk/cmdline-tools/bin/sdkmanager "platform-tools" "build-tools;30.0.3" "platforms;android-30"
+
+  - name: Set up ANDROID_HOME environment variable
+    run: echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+
   - name: Start ADB Server
     run: $ANDROID_HOME/platform-tools/adb start-server
 
@@ -92,6 +104,13 @@ jobs:
       disable-linux-hw-accel: false
       enable-hw-keyboard: false
       channel: stable
+
+  - name: Print Emulator Logs
+    run: cat /Users/runner/.android/avd/test.avd/logs/emulator.log
+
+  - name: Check Emulator Status
+    run: $ANDROID_HOME/platform-tools/adb devices
+
 
   - name: Print Emulator Logs
     run: cat /Users/runner/.android/avd/test.avd/logs/emulator.log

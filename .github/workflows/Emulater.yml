@@ -12,67 +12,72 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v4
+     - name: List available SDK packages
+       run: |
+          ~/android-sdk/cmdline-tools/latest/bin/sdkmanager --list
 
-      # Step 2: Set up JDK 17
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+    
+      # # Step 1: Checkout the code
+      # - name: Checkout code
+      #   uses: actions/checkout@v4
 
-      # Step 3: Set up Android SDK
-      - name: Set up Android SDK
-        run: |
-          mkdir -p ~/android-sdk/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
-          unzip cmdline-tools.zip -d ~/android-sdk/cmdline-tools
-          mv ~/android-sdk/cmdline-tools/cmdline-tools ~/android-sdk/cmdline-tools/latest
+      # # Step 2: Set up JDK 17
+      # - name: Set up JDK 17
+      #   uses: actions/setup-java@v4
+      #   with:
+      #     java-version: '17'
+      #     distribution: 'temurin'
+
+      # # Step 3: Set up Android SDK
+      # - name: Set up Android SDK
+      #   run: |
+      #     mkdir -p ~/android-sdk/cmdline-tools
+      #     wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+      #     unzip cmdline-tools.zip -d ~/android-sdk/cmdline-tools
+      #     mv ~/android-sdk/cmdline-tools/cmdline-tools ~/android-sdk/cmdline-tools/latest
           
-          # Ensure sdkmanager is executable
-          chmod +x ~/android-sdk/cmdline-tools/latest/bin/sdkmanager
+      #     # Ensure sdkmanager is executable
+      #     chmod +x ~/android-sdk/cmdline-tools/latest/bin/sdkmanager
           
-          # Set environment variables correctly
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+      #     # Set environment variables correctly
+      #     echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+      #     echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
-      # Step 4: Verify SDK Manager exists
-      - name: Verify SDK Manager
-        run: |
-          ls -la ~/android-sdk/cmdline-tools/latest/bin
-          ~/android-sdk/cmdline-tools/latest/bin/sdkmanager --version
+      # # Step 4: Verify SDK Manager exists
+      # - name: Verify SDK Manager
+      #   run: |
+      #     ls -la ~/android-sdk/cmdline-tools/latest/bin
+      #     ~/android-sdk/cmdline-tools/latest/bin/sdkmanager --version
 
-      # Step 5: Accept licenses
-      - name: Accept licenses
-        run: |
-          yes | ~/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+      # # Step 5: Accept licenses
+      # - name: Accept licenses
+      #   run: |
+      #     yes | ~/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
 
-      # Step 6: Install SDK components
-      - name: Install SDK components
-        run: |
-          ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86"
-          ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "emulator"
+      # # Step 6: Install SDK components
+      # - name: Install SDK components
+      #   run: |
+      #     ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86"
+      #     ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "emulator"
 
-      # Step 7: Run the Android Emulator and execute UI tests
-      - name: Run UI tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 35
-          script: ./gradlew connectedCheck
-          emulator-options: -no-window
-          target: google_apis
-          arch: x86
-          cores: 2
-          avd-name: test
-          force-avd-creation: true
-          emulator-boot-timeout: 600
-          disable-animations: true
-          disable-spellchecker: false
-          disable-linux-hw-accel: false
-          enable-hw-keyboard: false
-          channel: stable
+      # # Step 7: Run the Android Emulator and execute UI tests
+      # - name: Run UI tests
+      #   uses: reactivecircus/android-emulator-runner@v2
+      #   with:
+      #     api-level: 35
+      #     script: ./gradlew connectedCheck
+      #     emulator-options: -no-window
+      #     target: google_apis
+      #     arch: x86
+      #     cores: 2
+      #     avd-name: test
+      #     force-avd-creation: true
+      #     emulator-boot-timeout: 600
+      #     disable-animations: true
+      #     disable-spellchecker: false
+      #     disable-linux-hw-accel: false
+      #     enable-hw-keyboard: false
+      #     channel: stable
 
 # jobs:
 #   instrumentation-test:

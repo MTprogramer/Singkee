@@ -4,53 +4,191 @@ on:
   push:
     branches:
       - main
-
+  pull_request:
+    branches:
+      - main
 jobs:
   instrumentation-test:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up JDK 17 (required for Android SDK tools)
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
-      # Step 3: Enable KVM for better emulator performance
-      - name: Enable KVM
+      - name: Set up Android SDK
         run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
+          mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
-      # Step 4: Run the Android Emulator and execute UI tests
-      - name: Run UI tests
+      - name: Verify SDK Installation
+        run: |
+          ls -la $ANDROID_HOME/cmdline-tools/latest/bin  # Check if sdkmanager exists
+
+      - name: List available SDK packages
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
+
+
+      - name: Install SDK components
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-30" "system-images;android-30;google_apis;x86"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
+
+      - name: Accept SDK licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+
+      - name: Clean Gradle cache
+        run: ./gradlew clean
+
+
+      # - name: Accept SDK Licenses
+      #   run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      # - name: Install SDK components
+      #   run: |
+      #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86"
+      #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
+
+      - name: Build Android Project
+        run: ./gradlew assembleDebug assembleAndroidTest
+
+
+      - name: Run UI Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35 # Android API level
-          script: ./gradlew connectedCheck # Command to run UI tests
-          emulator-options: -no-window # Run emulator in headless mode
-          target: default # Target system image
-          arch: x86 # CPU architecture
-          cores: 2 # Number of CPU cores
-          avd-name: test # Name of the AVD
-          force-avd-creation: true # Force creation of the AVD
-          emulator-boot-timeout: 600 # Timeout for emulator boot
-          disable-animations: true # Disable animations for faster tests
-          disable-spellchecker: false # Keep spellchecker enabled
-          disable-linux-hw-accel: false # Enable hardware acceleration
-          enable-hw-keyboard: false # Disable hardware keyboard
-          channel: stable # Use stable channel for emulator
+          api-level: 35
+          target: google_apis
+          arch: x86
+          script: ./gradlew connectedCheck
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot
+          disable-animations: true
+          cores: 2
+          avd-name: test
+          force-avd-creation: true
+          emulator-boot-timeout: 600
 
-      # Step 5: Upload test results (optional)
-      - name: Upload test results
-        if: always() # Always run this step, even if tests fail
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: app/build/reports/androidTests/connected/
+
+
+    
+      # # Step 1: Checkout the code
+      # - name: Checkout code
+      #   uses: actions/checkout@v4
+
+      # # Step 2: Set up JDK 17
+      # - name: Set up JDK 17
+      #   uses: actions/setup-java@v4
+      #   with:
+      #     java-version: '17'
+      #     distribution: 'temurin'
+
+      # # Step 3: Set up Android SDK
+      # - name: Set up Android SDK
+      #   run: |
+      #     mkdir -p ~/android-sdk/cmdline-tools
+      #     wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+      #     unzip cmdline-tools.zip -d ~/android-sdk/cmdline-tools
+      #     mv ~/android-sdk/cmdline-tools/cmdline-tools ~/android-sdk/cmdline-tools/latest
+          
+      #     # Ensure sdkmanager is executable
+      #     chmod +x ~/android-sdk/cmdline-tools/latest/bin/sdkmanager
+          
+      #     # Set environment variables correctly
+      #     echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+      #     echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+
+      # # Step 4: Verify SDK Manager exists
+      # - name: Verify SDK Manager
+      #   run: |
+      #     ls -la ~/android-sdk/cmdline-tools/latest/bin
+      #     ~/android-sdk/cmdline-tools/latest/bin/sdkmanager --version
+
+      # # Step 5: Accept licenses
+      # - name: Accept licenses
+      #   run: |
+      #     yes | ~/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      # # Step 6: Install SDK components
+      # - name: Install SDK components
+      #   run: |
+      #     ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86"
+      #     ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "emulator"
+
+      # # Step 7: Run the Android Emulator and execute UI tests
+      # - name: Run UI tests
+      #   uses: reactivecircus/android-emulator-runner@v2
+      #   with:
+      #     api-level: 35
+      #     script: ./gradlew connectedCheck
+      #     emulator-options: -no-window
+      #     target: google_apis
+      #     arch: x86
+      #     cores: 2
+      #     avd-name: test
+      #     force-avd-creation: true
+      #     emulator-boot-timeout: 600
+      #     disable-animations: true
+      #     disable-spellchecker: false
+      #     disable-linux-hw-accel: false
+      #     enable-hw-keyboard: false
+      #     channel: stable
+
+# jobs:
+#   instrumentation-test:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # Step 1: Checkout the code
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       # Step 2: Set up JDK 17
+#       - name: Set up JDK 17
+#         uses: actions/setup-java@v4
+#         with:
+#           java-version: '17'
+#           distribution: 'temurin'
+
+#       # Step 3: Enable KVM
+#       - name: Enable KVM
+#         run: |
+#           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+#           sudo udevadm control --reload-rules
+#           sudo udevadm trigger --name-match=kvm
+
+#       # Step 4: Run the Android Emulator and execute UI tests
+#       - name: Run UI tests
+#         uses: reactivecircus/android-emulator-runner@v2
+#         with:
+#           api-level: 35
+#           script: ./gradlew connectedCheck
+#           emulator-options: -no-window
+#           target: google_apis # Use a valid target
+#           arch: x86
+#           cores: 2
+#           avd-name: test
+#           force-avd-creation: true
+#           emulator-boot-timeout: 600
+#           disable-animations: true
+#           disable-spellchecker: false
+#           disable-linux-hw-accel: false
+#           enable-hw-keyboard: false
+#           channel: stable
+
+#       # Step 5: Upload test results (optional)
+#       - name: Upload test results
+#         if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: test-results
+#           path: app/build/reports/androidTests/connected/

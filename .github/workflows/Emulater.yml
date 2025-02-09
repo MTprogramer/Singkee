@@ -60,8 +60,8 @@ jobs:
       #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86"
       #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
 
-      - name: Build Android Project
-        run: ./gradlew assembleDebug assembleAndroidTest
+      # - name: Build Android Project
+      #   run: ./gradlew assembleDebug assembleAndroidTest
 
       - name: Run UI Tests
         uses: reactivecircus/android-emulator-runner@v2

@@ -56,6 +56,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '11'
+          distribution: 'zulu'
 
       # Cache Gradle dependencies to speed up builds
       - name: Cache Gradle dependencies

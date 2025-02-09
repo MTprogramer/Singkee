@@ -12,30 +12,85 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Set up JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      # Step 3: Set up Android SDK
       - name: Set up Android SDK
         run: |
-          mkdir -p $ANDROID_HOME/cmdline-tools
+          mkdir -p ~/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
-          unzip cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
-          mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          unzip cmdline-tools.zip -d ~/android-sdk/cmdline-tools
+          mv ~/android-sdk/cmdline-tools/cmdline-tools ~/android-sdk/cmdline-tools/latest
+          echo "export ANDROID_HOME=~/android-sdk" >> $GITHUB_ENV
           echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
-      - name: Verify SDK Installation
-        run: |
-          ls -la $ANDROID_HOME/cmdline-tools/latest/bin  # Check if sdkmanager exists
+      # Step 4: Accept licenses
+      - name: Accept licenses
+        run: yes | sdkmanager --licenses
 
-      - name: List available SDK packages
+      # Step 5: Install SDK components
+      - name: Install SDK components
         run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
+          sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86"
+          sdkmanager "emulator"
+
+      # Step 6: Build the app
+      - name: Build Android Project
+        run: ./gradlew assembleDebug assembleAndroidTest
+
+      # Step 7: Run UI Tests on Emulator
+      - name: Run UI Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86
+          script: ./gradlew connectedCheck
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot
+          disable-animations: true
+          cores: 2
+          avd-name: test
+          force-avd-creation: true
+          emulator-boot-timeout: 600
+      
+# jobs:
+#   instrumentation-test:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Set up JDK 17
+#         uses: actions/setup-java@v4
+#         with:
+#           java-version: '17'
+#           distribution: 'temurin'
+
+#       - name: Set up Android SDK
+#         run: |
+#           mkdir -p $ANDROID_HOME/cmdline-tools
+#           wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+#           unzip cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
+#           mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+#           echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+
+#       - name: Verify SDK Installation
+#         run: |
+#           ls -la $ANDROID_HOME/cmdline-tools/latest/bin  # Check if sdkmanager exists
+
+#       - name: List available SDK packages
+#         run: |
+#           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
 
 
     

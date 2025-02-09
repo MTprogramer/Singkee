@@ -40,15 +40,25 @@ jobs:
 
 
 
-
-
-      - name: Accept SDK Licenses
-        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-
       - name: Install SDK components
         run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-30" "system-images;android-30;google_apis;x86"
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
+
+      - name: Accept SDK licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+
+
+
+      # - name: Accept SDK Licenses
+      #   run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      # - name: Install SDK components
+      #   run: |
+      #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86"
+      #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
 
       - name: Build Android Project
         run: ./gradlew assembleDebug assembleAndroidTest

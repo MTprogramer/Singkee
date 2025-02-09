@@ -48,16 +48,8 @@ jobs:
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
 
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: |
-              ${{ runner.os }}-gradle-
-
-
-
+      - name: Clean Gradle cache
+        run: ./gradlew clean
 
 
       # - name: Accept SDK Licenses

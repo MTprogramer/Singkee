@@ -61,7 +61,8 @@ jobs:
       #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
 
       - name: Build Android Project
-        run: ./gradlew assembleDebug assembleAndroidTest
+        run: ./gradlew assembleDebug assembleAndroidTest --no-daemon
+
 
       - name: Run UI Tests
         uses: reactivecircus/android-emulator-runner@v2

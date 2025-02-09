@@ -27,11 +27,11 @@ jobs:
       - name: Set up Android SDK
         run: |
           mkdir -p ~/android-sdk/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-*_latest.zip -O cmdline-tools.zip
+          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
           unzip cmdline-tools.zip -d ~/android-sdk/cmdline-tools
           mv ~/android-sdk/cmdline-tools/cmdline-tools ~/android-sdk/cmdline-tools/latest
           echo "export ANDROID_HOME=~/android-sdk" >> $GITHUB_ENV
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
+          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
       # Step 4: Accept licenses
       - name: Accept licenses
@@ -62,6 +62,7 @@ jobs:
           disable-linux-hw-accel: false
           enable-hw-keyboard: false
           channel: stable
+
 # jobs:
 #   instrumentation-test:
 #     runs-on: ubuntu-latest

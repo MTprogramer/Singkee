@@ -58,12 +58,6 @@ jobs:
           java-version: '11'
           distribution: 'temurin' 
 
-      # Install Android SDK and set up environment
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
-        with:
-         sdk-version: 'commandlinetools;latest'
-         android-licenses: true
 
       # Enable KVM for the emulator (for better performance)
       - name: Enable KVM

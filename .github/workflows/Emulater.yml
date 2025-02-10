@@ -50,6 +50,14 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
 
+      - name: Generate Debug Keystore
+        run: |
+          mkdir -p ~/.android
+          keytool -genkeypair -v -keystore ~/.android/debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -alias androiddebugkey
+
+      - name: Grant Execute Permission to Gradlew
+        run: chmod +x gradlew
+
 
       - name: Clean Gradle cache
         run: ./gradlew clean
@@ -64,7 +72,7 @@ jobs:
       #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
 
       - name: Build Android Project
-        run: ./gradlew assembleDebug assembleAndroidTest --stacktrace
+        run: ./gradlew assembleDebug assembleAndroidTest --debug
 
 
       - name: Run UI Tests

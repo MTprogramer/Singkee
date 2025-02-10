@@ -50,12 +50,18 @@ jobs:
           mkdir -p ~/.android/avd
           echo "Creating emulator..."
           echo no | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel_4" --force
+        continue-on-error: true
 
       - name: Verify Emulator
         run: |
           $ANDROID_HOME/emulator/emulator -list-avds
           ls -la ~/.android/avd
-          cat ~/.android/avd/test.ini || echo "AVD test.ini not found"
+          if [ -f ~/.android/avd/test.ini ]; then
+            cat ~/.android/avd/test.ini
+          else
+            echo "AVD test.ini not found"
+            exit 1
+          fi
 
       - name: Start Emulator
         run: |

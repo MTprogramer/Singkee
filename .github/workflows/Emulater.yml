@@ -52,6 +52,14 @@ jobs:
           mkdir -p ~/.android
           keytool -genkeypair -v -keystore ~/.android/debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -alias androiddebugkey
 
+          
+      - name: Verify Debug Keystore
+        run: ls -la ~/.android/debug.keystore
+
+      - name: Clear Gradle Cache
+        run: rm -rf ~/.gradle/caches/
+
+
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:

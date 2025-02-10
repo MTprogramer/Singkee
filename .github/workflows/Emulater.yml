@@ -38,12 +38,10 @@ jobs:
           echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
       - name: Verify SDK Installation
-        run: |
-          ls -la $ANDROID_HOME/cmdline-tools/latest/bin  # Check if sdkmanager exists
+        run: ls -la $ANDROID_HOME/cmdline-tools/latest/bin  
 
       - name: List available SDK packages
-        run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
+        run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
 
       - name: Install SDK components
         run: |
@@ -51,8 +49,7 @@ jobs:
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
 
       - name: Accept SDK licenses
-        run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
       - name: Generate Debug Keystore
         run: |
@@ -81,9 +78,18 @@ jobs:
       - name: Build Android Project
         run: ./gradlew assembleDebug assembleAndroidTest
 
+      - name: List Installed System Images
+        run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
+
       - name: Create Emulator
         run: |
-          echo no | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --force
+          echo no | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel_4" --force
+
+      - name: Verify Created AVDs
+        run: $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
+
+      - name: Ensure AVD Configuration Exists
+        run: ls -la $HOME/.android/avd
 
       - name: Start Emulator
         run: |
@@ -91,7 +97,9 @@ jobs:
 
       - name: Wait for Emulator to Boot
         run: |
-          $ANDROID_HOME/platform-tools/adb -e wait-for-device
+          $ANDROID_HOME/platform-tools/adb wait-for-device
+          sleep 120
+          $ANDROID_HOME/platform-tools/adb shell input keyevent 82  # Unlock the screen
 
       - name: Run UI Tests
         uses: reactivecircus/android-emulator-runner@v2

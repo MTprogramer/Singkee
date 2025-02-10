@@ -60,10 +60,16 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      # - name: Generate Debug Keystore
-      #   run: |
-      #     mkdir -p ~/.android
-      #     keytool -genkeypair -v -keystore ~/.android/debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -alias androiddebugkey
+        # Install dependencies (including Gradle)
+      - name: Set up Gradle
+        uses: gradle/wrapper-validation-action@v1
+      - name: Install dependencies
+        run: ./gradlew build
+
+      - name: Generate Debug Keystore
+        run: |
+          mkdir -p ~/.android
+          keytool -genkeypair -v -keystore ~/.android/debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -alias androiddebugkey
 
       - name: Grant Execute Permission to Gradlew
         run: chmod +x gradlew
@@ -71,9 +77,7 @@ jobs:
 
       - name: Clean Gradle cache
         run: ./gradlew clean
-        
-      - name: Build with Gradle
-        run: ./gradlew build
+      
 
 
       # - name: Accept SDK Licenses

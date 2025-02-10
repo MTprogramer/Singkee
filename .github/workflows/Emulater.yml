@@ -47,6 +47,9 @@ jobs:
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+
 
       - name: Clean Gradle cache
         run: ./gradlew clean

@@ -60,6 +60,10 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
+      - name: Grant Execute Permission to Gradlew
+        run: chmod +x gradlew
+
+
         # Install dependencies (including Gradle)
       - name: Set up Gradle
         uses: gradle/wrapper-validation-action@v1
@@ -71,9 +75,7 @@ jobs:
           mkdir -p ~/.android
           keytool -genkeypair -v -keystore ~/.android/debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -alias androiddebugkey
 
-      - name: Grant Execute Permission to Gradlew
-        run: chmod +x gradlew
-
+     
 
       - name: Clean Gradle cache
         run: ./gradlew clean

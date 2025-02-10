@@ -45,6 +45,12 @@ plugins {
                 )
             }
         }
+        java {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(21) // Make sure to use JDK 21
+            }
+        }
+
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_21
             targetCompatibility = JavaVersion.VERSION_21

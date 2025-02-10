@@ -55,6 +55,7 @@ jobs:
         run: |
           $ANDROID_HOME/emulator/emulator -list-avds
           ls -la ~/.android/avd
+          cat ~/.android/avd/test.ini || echo "AVD test.ini not found"
 
       - name: Start Emulator
         run: |

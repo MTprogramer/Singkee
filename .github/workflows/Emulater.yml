@@ -85,6 +85,7 @@ jobs:
 
       - name: Restart ADB server
         run: |
+          export PATH=$ANDROID_HOME/platform-tools:$PATH  # Make sure adb is in the PATH
           adb kill-server
           adb start-server
 

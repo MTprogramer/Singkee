@@ -47,7 +47,6 @@ jobs:
 
       - name: Create Emulator
         run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list device
           echo "Creating emulator..."
           echo no | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel_4" --force
 
@@ -59,11 +58,7 @@ jobs:
       - name: Start Emulator
         run: |
           $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-          sleep 60  # Increase wait time for booting
-
-      - name: Wait for Emulator to Boot
-        run: |
-          echo "Waiting for emulator to be ready..."
+          echo "Waiting for emulator to boot..."
           adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
           adb shell input keyevent 82  # Unlock screen
 

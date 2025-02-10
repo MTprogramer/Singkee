@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
   instrumentation-test:
     runs-on: ubuntu-latest
@@ -43,6 +47,7 @@ jobs:
 
       - name: Create Emulator
         run: |
+          mkdir -p ~/.android/avd
           echo "Creating emulator..."
           echo no | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel_4" --force
 

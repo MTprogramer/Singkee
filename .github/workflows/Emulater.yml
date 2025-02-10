@@ -36,6 +36,7 @@ jobs:
           unzip cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
           mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
           echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
 
       - name: Accept SDK Licenses
         run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
@@ -50,6 +51,9 @@ jobs:
           mkdir -p ~/.android/avd
           echo "Creating emulator..."
           echo no | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel_4" --force
+          echo "AVD creation command completed"
+          ls -la ~/.android/avd
+          cat ~/.android/avd/test.ini || echo "AVD test.ini not found"
         continue-on-error: true
 
       - name: Verify Emulator

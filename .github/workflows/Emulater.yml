@@ -83,11 +83,18 @@ jobs:
       - name: Build Android Project
         run: ./gradlew assembleDebug assembleAndroidTest
 
-      - name: Restart ADB server
+      - name: Create Emulator
         run: |
-          export PATH=$ANDROID_HOME/platform-tools:$PATH  # Make sure adb is in the PATH
-          adb kill-server
-          adb start-server
+          echo no | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-35;google_apis;x86_64" --force
+          
+      - name: Start Emulator
+        run: |
+          nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+
+      - name: Wait for Emulator to Boot
+        run: |
+          $ANDROID_HOME/platform-tools/adb -e wait-for-device
+          
 
       - name: Run UI Tests
         uses: reactivecircus/android-emulator-runner@v2

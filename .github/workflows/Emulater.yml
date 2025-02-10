@@ -9,6 +9,7 @@ on:
       - main
 
 jobs:
+
   instrumentation-test:
     runs-on: ubuntu-latest
 
@@ -81,6 +82,11 @@ jobs:
 
       - name: Build Android Project
         run: ./gradlew assembleDebug assembleAndroidTest
+
+      - name: Restart ADB server
+        run: |
+          adb kill-server
+          adb start-server
 
       - name: Run UI Tests
         uses: reactivecircus/android-emulator-runner@v2

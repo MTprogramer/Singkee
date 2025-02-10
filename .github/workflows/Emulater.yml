@@ -50,6 +50,16 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
 
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
       - name: Generate Debug Keystore
         run: |
           mkdir -p ~/.android
@@ -61,6 +71,9 @@ jobs:
 
       - name: Clean Gradle cache
         run: ./gradlew clean
+        
+      - name: Build with Gradle
+        run: ./gradlew assembleDebug --stacktrace
 
 
       # - name: Accept SDK Licenses
@@ -72,7 +85,7 @@ jobs:
       #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
 
       - name: Build Android Project
-        run: ./gradlew assembleDebug assembleAndroidTest --debug
+        run: ./gradlew assembleDebug assembleAndroidTest 
 
 
       - name: Run UI Tests

@@ -9,7 +9,6 @@ on:
       - main
 
 jobs:
-
   instrumentation-test:
     runs-on: ubuntu-latest
 
@@ -38,14 +37,24 @@ jobs:
           echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
       - name: Verify SDK Installation
-        run: ls -la $ANDROID_HOME/cmdline-tools/latest/bin  
+        run: ls -la $ANDROID_HOME/cmdline-tools/latest/bin  # Check if sdkmanager exists
 
       - name: List available SDK packages
         run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
 
+      # ✅ FIX: Ensure the AVD directory exists before creating an emulator
+      - name: Ensure AVD Directory Exists
+        run: mkdir -p ~/.android/avd
+
+      # ✅ FIX: Uninstall and reinstall the system image to avoid missing packages
+      - name: Reinstall System Image
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --uninstall "system-images;android-30;google_apis;x86" || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "system-images;android-30;google_apis;x86"
+
       - name: Install SDK components
         run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-30" "system-images;android-30;google_apis;x86"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-30"
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
 
       - name: Accept SDK licenses
@@ -78,29 +87,26 @@ jobs:
       - name: Build Android Project
         run: ./gradlew assembleDebug assembleAndroidTest
 
-      - name: List Installed System Images
-        run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
-
+      # ✅ FIX: Manually create AVD if it is missing
       - name: Create Emulator
         run: |
           echo no | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel_4" --force
+          mkdir -p ~/.android/avd/test.avd
+          touch ~/.android/avd/test.avd/config.ini
 
+      # ✅ FIX: Verify that AVD was actually created
       - name: Verify Created AVDs
-        run: $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
-
-      - name: Ensure AVD Configuration Exists
-        run: ls -la $HOME/.android/avd
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
+          ls -la ~/.android/avd
 
       - name: Start Emulator
         run: |
           nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
 
       - name: Wait for Emulator to Boot
-        run: |
-          $ANDROID_HOME/platform-tools/adb wait-for-device
-          sleep 120
-          $ANDROID_HOME/platform-tools/adb shell input keyevent 82  # Unlock the screen
-
+        run: $ANDROID_HOME/platform-tools/adb -e wait-for-device
+          
       - name: Run UI Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:

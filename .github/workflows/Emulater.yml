@@ -64,7 +64,7 @@ jobs:
       #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
 
       - name: Build Android Project
-        run: ./gradlew assembleDebug assembleAndroidTest
+        run: ./gradlew assembleDebug assembleAndroidTest --stacktrace
 
 
       - name: Run UI Tests

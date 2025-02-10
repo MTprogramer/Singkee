@@ -16,11 +16,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Enable KVM
+      - name: Enable KVM (Hardware Acceleration)
         run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
+          sudo apt-get update
+          sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+          sudo adduser $USER kvm
+          sudo chmod 666 /dev/kvm
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -36,77 +37,36 @@ jobs:
           mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
           echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
-      - name: Verify SDK Installation
-        run: ls -la $ANDROID_HOME/cmdline-tools/latest/bin  # Check if sdkmanager exists
-
-      - name: List available SDK packages
-        run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
-
-      # ✅ FIX: Ensure the AVD directory exists before creating an emulator
-      - name: Ensure AVD Directory Exists
-        run: mkdir -p ~/.android/avd
-
-      # ✅ FIX: Uninstall and reinstall the system image to avoid missing packages
-      - name: Reinstall System Image
-        run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --uninstall "system-images;android-30;google_apis;x86" || true
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "system-images;android-30;google_apis;x86"
-
-      - name: Install SDK components
-        run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0" "platform-tools" "platforms;android-30"
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
-
-      - name: Accept SDK licenses
+      - name: Accept SDK Licenses
         run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
-      - name: Generate Debug Keystore
+      - name: Install Required Android Components
         run: |
-          mkdir -p ~/.android
-          keytool -genkeypair -v -keystore ~/.android/debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -alias androiddebugkey
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;35.0.0"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator" "system-images;android-30;google_apis;x86"
 
-      - name: Verify Debug Keystore
-        run: ls -la ~/.android/debug.keystore
-
-      - name: Clear Gradle Cache
-        run: rm -rf ~/.gradle/caches/
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-${{ runner.os }}-
-
-      - name: Grant Execute Permission to Gradlew
-        run: chmod +x gradlew
-
-      - name: Build Android Project
-        run: ./gradlew assembleDebug assembleAndroidTest
-
-      # ✅ FIX: Manually create AVD if it is missing
       - name: Create Emulator
         run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list device
+          echo "Creating emulator..."
           echo no | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel_4" --force
-          mkdir -p ~/.android/avd/test.avd
-          touch ~/.android/avd/test.avd/config.ini
 
-      # ✅ FIX: Verify that AVD was actually created
-      - name: Verify Created AVDs
+      - name: Verify Emulator
         run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
+          $ANDROID_HOME/emulator/emulator -list-avds
           ls -la ~/.android/avd
 
       - name: Start Emulator
         run: |
-          nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+          $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+          sleep 60  # Increase wait time for booting
 
       - name: Wait for Emulator to Boot
-        run: $ANDROID_HOME/platform-tools/adb -e wait-for-device
-          
+        run: |
+          echo "Waiting for emulator to be ready..."
+          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
+          adb shell input keyevent 82  # Unlock screen
+
       - name: Run UI Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -114,7 +74,6 @@ jobs:
           target: google_apis
           arch: x86
           script: ./gradlew connectedCheck
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot
           disable-animations: true
           cores: 2
           avd-name: test

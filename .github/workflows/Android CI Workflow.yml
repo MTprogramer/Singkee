@@ -61,7 +61,8 @@ jobs:
       run: sudo apt install google-android-emulator-installer
 
     - name: Verify emu
-      run: emulator -version
+      run: emulator -list-avds
+
 
 
 

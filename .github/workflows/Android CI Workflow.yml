@@ -58,6 +58,9 @@ jobs:
         sdkmanager --install "system-images;android-34;google_apis;x86_64"
         echo "no" | avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" --device "pixel_4"
 
+    - name: verfy sdk
+      run: ls -la $ANDROID_HOME/cmdline-tools
+
     - name: List AVDs
       run: avdmanager list avd
 

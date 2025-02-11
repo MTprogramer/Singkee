@@ -19,44 +19,33 @@ jobs:
         distribution: 'adopt'
         java-version: '21'
 
-    - name: Verify SDK Before Setup
-      run: ls -la $ANDROID_HOME/cmdline-tools || echo "SDK not found!"
+    - name: **Remove Existing Android SDK to Prevent Conflicts**
+      run: |
+        rm -rf $HOME/Android/Sdk
+        mkdir -p $HOME/Android/Sdk
 
     - name: Set ANDROID_HOME and Update PATH
       run: |
         echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
         echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
 
-    - name: Create cmdline-tools Directory
-      run: mkdir -p $ANDROID_HOME/cmdline-tools
-
     - name: Download and Extract cmdline-tools
       run: |
+        mkdir -p $ANDROID_HOME/cmdline-tools
         wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
         unzip cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
         mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
         rm cmdline-tools.zip
 
-    - name: Install Required Android SDK Components
+    - name: Ensure avdmanager and SDK Tools are Installed
       run: |
         export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
         sdkmanager --install "platform-tools" "emulator" "system-images;android-34;google_apis;x86_64"
         yes | sdkmanager --licenses
+        chmod +x $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager
 
-    - name: Verify ANDROID_HOME
-      run: echo $ANDROID_HOME
-
-    - name: Check SDK Directory
-      run: ls -la $ANDROID_HOME/cmdline-tools
-
-    - name: Check ADB Version
+    - name: Verify ADB
       run: adb version || echo "ADB not found!"
-      
-    - name: Check ADB Devices
-      run: adb devices || echo "ADB not found!"
-
-    - name: Ensure avdmanager is Executable
-      run: chmod +x $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager
 
     - name: Create Android Virtual Device (AVD)
       run: |
@@ -66,9 +55,6 @@ jobs:
 
     - name: List Available AVDs
       run: avdmanager list avd || echo "No AVDs available!"
-
-    - name: Verify Emulator Version
-      run: emulator -version || echo "Emulator not found!"
 
     - name: Start Emulator
       run: |

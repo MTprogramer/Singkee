@@ -16,71 +16,64 @@ jobs:
     - name: Set up JDK 21
       uses: actions/setup-java@v3
       with:
-          distribution: 'adopt'
-          java-version: '21'
-     
-     
-    - name: verfy sdk before
-      run: ls -la $ANDROID_HOME/cmdline-tools
-          
+        distribution: 'adopt'
+        java-version: '21'
 
-    - name: Set ANDROID_HOME and update PATH
+    - name: Verify SDK Before Setup
+      run: ls -la $ANDROID_HOME/cmdline-tools || echo "SDK not found!"
+
+    - name: Set ANDROID_HOME and Update PATH
       run: |
         echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
         echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
 
-    - name: Create cmdline-tools directory
-      run: |
-        mkdir -p $ANDROID_HOME/cmdline-tools
+    - name: Create cmdline-tools Directory
+      run: mkdir -p $ANDROID_HOME/cmdline-tools
 
-    - name: Download cmdline-tools
+    - name: Download and Extract cmdline-tools
       run: |
         wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
         unzip cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
         mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
         rm cmdline-tools.zip
 
-    - name: update env
-      run: echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> ~/.bashrc
-           source ~/.bashrc
-
-
-     
-    - name: verfy sdk
-      run: ls -la $ANDROID_HOME/cmdline-tools
+    - name: Install Required Android SDK Components
+      run: |
+        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+        sdkmanager --install "platform-tools" "emulator" "system-images;android-34;google_apis;x86_64"
+        yes | sdkmanager --licenses
 
     - name: Verify ANDROID_HOME
       run: echo $ANDROID_HOME
 
-      
-    - name:  Verify  ..............
-      run: |
-        export ANDROID_HOME=$HOME/Android/Sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
-        source ~/.bashrc
-
-
-    - name: Verifv beforey ANDROID_HOME
-      run: echo $ANDROID_HOME
+    - name: Check SDK Directory
+      run: ls -la $ANDROID_HOME/cmdline-tools
 
     - name: Check ADB Version
-      run: adb version
+      run: adb version || echo "ADB not found!"
 
-    - name: Install Emulator
-      run: sudo apt install google-android-emulator-installer -y
+    - name: Ensure avdmanager is Executable
+      run: chmod +x $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager
 
-    - name: Check Emulator Version
-      run: emulator -version
-
-    - name: Install System Image & Create AVD
+    - name: Create Android Virtual Device (AVD)
       run: |
         export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        sdkmanager --install "system-images;android-34;google_apis;x86_64"
+        avdmanager list avd || echo "No AVDs found, creating one..."
         echo "no" | avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" --device "pixel_4"
 
+    - name: List Available AVDs
+      run: avdmanager list avd || echo "No AVDs available!"
 
-    - name: List AVDs
-      run: avdmanager list avd
+    - name: Verify Emulator Version
+      run: emulator -version || echo "Emulator not found!"
+
+    - name: Start Emulator
+      run: |
+        export PATH=$ANDROID_HOME/emulator:$PATH
+        nohup emulator -avd test -no-window -no-audio -no-boot-anim -accel on &
+
+    - name: Wait for Emulator to Boot
+      run: adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 5; done'
 
     - name: Verify ADB Again
-      run: adb version
+      run: adb devices

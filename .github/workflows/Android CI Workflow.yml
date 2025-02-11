@@ -63,9 +63,6 @@ jobs:
         # $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "emulator"
 
     
-    - name: very
-      run: |
-         $ANDROID_HOME/emulator/emulator -list-avds
 
 
     - name: Accept Licenses

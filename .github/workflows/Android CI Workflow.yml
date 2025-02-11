@@ -48,6 +48,7 @@ jobs:
         export PATH=$ANDROID_HOME/platform-tools:$PATH
         which adb || echo "ADB not found in PATH!"
         adb version || echo "ADB command still not found!"
+        adb devices || echo "ADB command still not found!"
 
     - name: check adb devices
       run: adb devices || not found

@@ -25,25 +25,25 @@ jobs:
       run: ls -la $ANDROID_HOME/cmdline-tools
           
 
-    # - name: Set ANDROID_HOME and update PATH
-    #   run: |
-    #     echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
-    #     echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
+    - name: Set ANDROID_HOME and update PATH
+      run: |
+        echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
+        echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
 
-    # - name: Create cmdline-tools directory
-    #   run: |
-    #     mkdir -p $ANDROID_HOME/cmdline-tools
+    - name: Create cmdline-tools directory
+      run: |
+        mkdir -p $ANDROID_HOME/cmdline-tools
 
-    # - name: Download cmdline-tools
-    #   run: |
-    #     wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
-    #     unzip cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
-    #     mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-    #     rm cmdline-tools.zip
+    - name: Download cmdline-tools
+      run: |
+        wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+        unzip cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
+        mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+        rm cmdline-tools.zip
 
-    # - name: update env
-    #   run: echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> ~/.bashrc
-    #        source ~/.bashrc
+    - name: update env
+      run: echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> ~/.bashrc
+           source ~/.bashrc
 
 
 
@@ -59,7 +59,7 @@ jobs:
     - name:  Verify  ..............
       run: |
         export ANDROID_HOME=$HOME/Android/Sdk
-        export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH
+        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
         source ~/.bashrc
 
     

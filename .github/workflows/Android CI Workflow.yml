@@ -39,9 +39,7 @@ jobs:
       run: echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> ~/.bashrc
            source ~/.bashrc
 
-    - name:  Verify avdmanager Availability
-      run: |
-        $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager --help
+
 
 
      
@@ -50,6 +48,18 @@ jobs:
 
     - name: Verify ANDROID_HOME
       run: echo $ANDROID_HOME
+
+      
+    - name:  Verify  ..............
+      run: |
+        export ANDROID_HOME=$HOME/Android/Sdk
+        export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH
+        source ~/.bashrc
+
+    
+    - name: Verify afterANDROID_HOME
+      run: echo $ANDROID_HOME
+
 
     - name: Check ADB Version
       run: adb version

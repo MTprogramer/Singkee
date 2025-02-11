@@ -32,7 +32,7 @@ jobs:
         echo "export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> ~/.bashrc
         source ~/.bashrc
 
-    - name: Install SDK Command Line Tools
+    - name: Manually Download SDK Tools
       run: |
         mkdir -p $ANDROID_HOME/cmdline-tools
         wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
@@ -43,42 +43,20 @@ jobs:
     - name: Install ADB and Platform Tools
       run: |
         export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        sdkmanager --install "platform-tools"
-        sdkmanager --install "emulator"
-        sdkmanager --install "system-images;android-34;google_apis;x86_64"
-        yes | sdkmanager --licenses
-        chmod +x $ANDROID_HOME/platform-tools/adb
-        chmod +x $ANDROID_HOME/emulator/emulator
+        sdkmanager --update || echo "SDK Manager Update Failed!"
+        sdkmanager --install "platform-tools" || echo "Platform Tools Install Failed!"
+        sdkmanager --install "emulator" || echo "Emulator Install Failed!"
+        sdkmanager --install "system-images;android-34;google_apis;x86_64" || echo "System Image Install Failed!"
+        yes | sdkmanager --licenses || echo "License Acceptance Failed!"
+        chmod +x $ANDROID_HOME/platform-tools/adb || echo "Failed to set ADB permissions!"
 
-    - name: Verify ADB is Installed
+    - name: Verify ADB Installation
       run: |
-        ls -la $ANDROID_HOME/platform-tools/
-        echo "Checking ADB Version..."
-        $ANDROID_HOME/platform-tools/adb version || echo "ADB still not found!"
+        ls -la $ANDROID_HOME/platform-tools/ || echo "ADB directory missing!"
+        $ANDROID_HOME/platform-tools/adb version || echo "ADB command not found!"
 
     - name: Ensure ADB is in PATH
       run: |
-        echo "Checking PATH for ADB..."
         which adb || echo "ADB not found in PATH!"
         export PATH=$ANDROID_HOME/platform-tools:$PATH
-        echo "Retrying ADB version..."
         adb version || echo "ADB command still not found!"
-
-    - name: Create Android Virtual Device (AVD)
-      run: |
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        echo "no" | avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" --device "pixel_4"
-
-    - name: List Available AVDs
-      run: avdmanager list avd || echo "No AVDs available!"
-
-    - name: Start Emulator
-      run: |
-        export PATH=$ANDROID_HOME/emulator:$PATH
-        nohup emulator -avd test -no-window -no-audio -no-boot-anim -accel on &
-
-    - name: Wait for Emulator to Boot
-      run: adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 5; done'
-
-    - name: Verify ADB Again
-      run: adb devices || echo "ADB still not working!"

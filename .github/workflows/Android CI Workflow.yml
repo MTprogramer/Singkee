@@ -58,8 +58,17 @@ jobs:
     - name: Install Emulator
       run: |
          sdkmanager --install "emulator"
+         emulator -list-avds || not found
+
 
         # $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "emulator"
+
+    
+    - name: very
+      run: |
+         export PATH=$ANDROID_HOME/emulator:$PATH
+         source ~/.bashrc
+         emulator -list-avds || not found
 
     - name: Accept Licenses
       run: |

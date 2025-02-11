@@ -56,3 +56,12 @@ jobs:
           export PATH=$ANDROID_HOME/platform-tools:$PATH
           adb devices || not found
 
+
+    - name: install emulator
+      run: sudo apt install google-android-emulator-installer
+
+    - name: Verify emu
+      run: emulator -version
+
+
+

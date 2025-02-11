@@ -45,8 +45,6 @@ jobs:
            source ~/.bashrc
 
 
-
-
      
     - name: verfy sdk
       run: ls -la $ANDROID_HOME/cmdline-tools
@@ -61,6 +59,9 @@ jobs:
         export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
         source ~/.bashrc
 
+
+    - name: Verifv beforey ANDROID_HOME
+      run: echo $ANDROID_HOME
 
     - name: Check ADB Version
       run: adb version

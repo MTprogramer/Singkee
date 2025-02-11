@@ -51,6 +51,9 @@ jobs:
 
     - name: Check ADB Version
       run: adb version || echo "ADB not found!"
+      
+    - name: Check ADB Devices
+      run: adb devices || echo "ADB not found!"
 
     - name: Ensure avdmanager is Executable
       run: chmod +x $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager

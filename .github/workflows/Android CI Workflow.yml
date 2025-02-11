@@ -63,7 +63,8 @@ jobs:
 
     - name: emu Version
       run: |
-           emulator -list-avds
+           emulator -version
+
 
     - name: Create AVD
       run: |

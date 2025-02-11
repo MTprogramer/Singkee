@@ -52,14 +52,6 @@ jobs:
       run: |
         echo $ANDROID_HOME
 
-    - name: Ensure adb is installed and check version
-      run: |
-        adb version
-
-    - name: List adb devices
-      run: |
-        adb devices
-
     - name: List available AVDs
       run: |
         emulator -list-avds

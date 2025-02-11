@@ -65,6 +65,7 @@ jobs:
 
     - name: Create AVD
       run: |
+        $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list device
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" --device "pixel_4" --force
         echo "List of AVDs after creation:"
         $ANDROID_HOME/emulator/emulator -list-avds

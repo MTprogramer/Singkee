@@ -44,15 +44,13 @@ jobs:
       run: echo $ANDROID_HOME
 
     - name: Check ADB Version
-      run: sdkmanager --list
+      run: adb version
 
     - name: Install Emulator
-      run: sdkmanager --install "emulator"
-
+      run: sudo apt install google-android-emulator-installer -y
 
     - name: Check Emulator Version
-      run: emulator -list-avds
-
+      run: emulator -version
 
     - name: Install System Image & Create AVD
       run: |

@@ -19,7 +19,7 @@ jobs:
         distribution: 'adopt'
         java-version: '21'
 
-    - name: Remove Old SDK to Prevent Conflicts
+    - name: Manually Remove Any Existing SDK
       run: |
         rm -rf $HOME/Android/Sdk
         mkdir -p $HOME/Android/Sdk
@@ -32,7 +32,7 @@ jobs:
         echo "export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> ~/.bashrc
         source ~/.bashrc
 
-    - name: Manually Download SDK Tools
+    - name: Manually Download Command Line Tools
       run: |
         mkdir -p $ANDROID_HOME/cmdline-tools
         wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
@@ -40,23 +40,16 @@ jobs:
         mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
         rm cmdline-tools.zip
 
-    - name: Install ADB and Platform Tools
+    - name: Manually Download & Extract Platform Tools (ADB)
       run: |
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        sdkmanager --update || echo "SDK Manager Update Failed!"
-        sdkmanager --install "platform-tools" || echo "Platform Tools Install Failed!"
-        sdkmanager --install "emulator" || echo "Emulator Install Failed!"
-        sdkmanager --install "system-images;android-34;google_apis;x86_64" || echo "System Image Install Failed!"
-        yes | sdkmanager --licenses || echo "License Acceptance Failed!"
-        chmod +x $ANDROID_HOME/platform-tools/adb || echo "Failed to set ADB permissions!"
+        wget https://dl.google.com/android/repository/platform-tools-latest-linux.zip -O platform-tools.zip
+        unzip platform-tools.zip -d $ANDROID_HOME
+        rm platform-tools.zip
+        ls -la $ANDROID_HOME/platform-tools
 
-    - name: Verify ADB Installation
+    - name: Ensure ADB is Installed and Working
       run: |
-        ls -la $ANDROID_HOME/platform-tools/ || echo "ADB directory missing!"
-        $ANDROID_HOME/platform-tools/adb version || echo "ADB command not found!"
-
-    - name: Ensure ADB is in PATH
-      run: |
-        which adb || echo "ADB not found in PATH!"
+        chmod +x $ANDROID_HOME/platform-tools/adb
         export PATH=$ANDROID_HOME/platform-tools:$PATH
+        which adb || echo "ADB not found in PATH!"
         adb version || echo "ADB command still not found!"

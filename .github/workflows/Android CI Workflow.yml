@@ -66,9 +66,19 @@ jobs:
     - name: Verify emu
       run: sudo apt install google-android-cmdline-tools-1.0-installer
 
+      
     - name: sreate emulator image
-      run: sdkmanager --install "system-images;android-34;google_apis;x86_64"
-          avdmanager create avd -n my_avd -k "system-images;android-34;google_apis;x86_64"
+      run: |
+           $ANDROID_HOME/emulator/emulator -list-avds
+           $ANDROID_HOME/tools/bin/avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64"
+           $ANDROID_HOME/emulator/emulator -list-avds
+
+
+
+
+    # - name: sreate emulator image
+    #   run: sdkmanager --install "system-images;android-34;google_apis;x86_64"
+    #       avdmanager create avd -n my_avd -k "system-images;android-34;google_apis;x86_64"
 
 
 

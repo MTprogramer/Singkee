@@ -44,7 +44,7 @@ jobs:
       run: echo $ANDROID_HOME
 
     - name: Check ADB Version
-      run: adb version
+      run: sdkmanager --list
 
     - name: Install Emulator
       run: sudo apt install google-android-emulator-installer -y

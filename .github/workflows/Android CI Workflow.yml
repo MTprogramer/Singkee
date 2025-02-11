@@ -57,7 +57,9 @@ jobs:
 
     - name: Install Emulator
       run: |
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "emulator"
+         sdkmanager --install "emulator"
+
+        # $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "emulator"
 
     - name: Accept Licenses
       run: |

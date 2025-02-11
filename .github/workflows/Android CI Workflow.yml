@@ -51,5 +51,7 @@ jobs:
         adb devices || echo "ADB command still not found!"
 
     - name: check adb devices
-      run: adb devices || not found
+      run: | 
+          chmod +x $ANDROID_HOME/platform-tools/adb
+          adb devices || not found
 

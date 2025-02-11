@@ -19,7 +19,7 @@ jobs:
         distribution: 'adopt'
         java-version: '21'
 
-    - name: **Remove Old SDK to Prevent Conflicts**
+    - name: Remove Old SDK to Prevent Conflicts
       run: |
         rm -rf $HOME/Android/Sdk
         mkdir -p $HOME/Android/Sdk
@@ -50,13 +50,13 @@ jobs:
         chmod +x $ANDROID_HOME/platform-tools/adb
         chmod +x $ANDROID_HOME/emulator/emulator
 
-    - name: **Verify ADB is Installed**
+    - name: Verify ADB is Installed
       run: |
         ls -la $ANDROID_HOME/platform-tools/
         echo "Checking ADB Version..."
         $ANDROID_HOME/platform-tools/adb version || echo "ADB still not found!"
 
-    - name: **Ensure ADB is in PATH**
+    - name: Ensure ADB is in PATH
       run: |
         echo "Checking PATH for ADB..."
         which adb || echo "ADB not found in PATH!"

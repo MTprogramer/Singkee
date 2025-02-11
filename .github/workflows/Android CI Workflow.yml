@@ -56,7 +56,7 @@ jobs:
        run: |
          adb version
 
-    - name: Install emu
+    - name: Install emulater
       run: |
            sudo apt install google-android-emulator-installer
 

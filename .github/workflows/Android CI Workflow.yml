@@ -73,6 +73,8 @@ jobs:
       
     - name: Create AVD
       run: |
+        rm -rf $ANDROID_HOME/cmdline-tools
+
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-34;google_apis;x86_64"
         
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64"

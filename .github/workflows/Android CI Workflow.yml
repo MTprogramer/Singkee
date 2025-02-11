@@ -23,7 +23,7 @@ jobs:
       run: |
         
         echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
-        echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
+        echo "ANDROID_HOME=$HOME/.android/avd" >> $GITHUB_ENV
         echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
         echo "export ANDROID_HOME=$HOME/Android/Sdk" >> ~/.bashrc
         echo "export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> ~/.bashrc
@@ -85,10 +85,13 @@ jobs:
     - name: Start Emulator
       run: |
 
-          export ANDROID_AVD_HOME=/home/runner/.config/.android/avd
-          ls -la $ANDROID_AVD_HOME  # Confirm the existence of the .avd folder and test.ini file
-           nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-          sleep 60
+        nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -verbose -avd-config-path $ANDROID_AVD_HOME/test.avd &
+       
+
+          # export ANDROID_AVD_HOME=/home/runner/.config/.android/avd
+          # ls -la $ANDROID_AVD_HOME  # Confirm the existence of the .avd folder and test.ini file
+          #  nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+          # sleep 60
          
 
           # export ANDROID_AVD_HOME=$HOME/.android/avd

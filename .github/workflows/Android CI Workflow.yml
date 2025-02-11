@@ -86,10 +86,3 @@ jobs:
 
 
 
-
-
-    - name: sreate emulator image
-      run: sdkmanager --install "system-images;android-34;google_apis;x86_64"
-          avdmanager create avd -n my_avd -k "system-images;android-34;google_apis;x86_64"
-
-

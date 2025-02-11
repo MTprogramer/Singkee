@@ -47,7 +47,8 @@ jobs:
       run: sdkmanager --list
 
     - name: Install Emulator
-      run: sudo apt install google-android-emulator-installer -y
+      run: sdkmanager --install "emulator"
+
 
     - name: Check Emulator Version
       run: emulator -version

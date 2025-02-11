@@ -62,7 +62,7 @@ jobs:
 
     - name: List AVDs after creation
       run: |
-           $ANDROID_HOME/emulator/emulator -list-avds
+           adb version
 
 
     - name: Start Emulator

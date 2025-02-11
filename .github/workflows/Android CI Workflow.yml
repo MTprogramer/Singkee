@@ -76,7 +76,8 @@ jobs:
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list device
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" -d pixel_5
         echo "List of AVDs after creation:"
-        $ANDROID_HOME/cmdline-tools/latest/bin/ avdmanager list avd   
+        $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
+
         $ANDROID_HOME/emulator/emulator -list-avds
 
     - name: Start Emulator

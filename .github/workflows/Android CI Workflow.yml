@@ -19,7 +19,6 @@ jobs:
           distribution: 'adopt'
           java-version: '21'
      
-
      
     - name: verfy sdk before
       run: ls -la $ANDROID_HOME/cmdline-tools
@@ -41,9 +40,9 @@ jobs:
         mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
         rm cmdline-tools.zip
 
-    - name: update env
-      run: echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> ~/.bashrc
-           source ~/.bashrc
+    # - name: update env
+    #   run: echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> ~/.bashrc
+    #        source ~/.bashrc
 
 
 
@@ -61,10 +60,6 @@ jobs:
         export ANDROID_HOME=$HOME/Android/Sdk
         export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
         source ~/.bashrc
-
-    
-    - name: Verify afterANDROID_HOME
-      run: echo $ANDROID_HOME
 
 
     - name: Check ADB Version

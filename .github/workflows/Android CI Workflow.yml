@@ -53,5 +53,6 @@ jobs:
     - name: check adb devices
       run: | 
           chmod +x $ANDROID_HOME/platform-tools/adb
+          export PATH=$ANDROID_HOME/platform-tools:$PATH
           adb devices || not found
 

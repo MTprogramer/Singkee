@@ -18,6 +18,12 @@ jobs:
       with:
           distribution: 'adopt'
           java-version: '21'
+     
+
+     
+    - name: verfy sdk before
+      run: ls -la $ANDROID_HOME/cmdline-tools
+          
 
     - name: Set ANDROID_HOME and update PATH
       run: |

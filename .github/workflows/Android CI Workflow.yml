@@ -54,7 +54,7 @@ jobs:
 
     -  name: List AVDs before creation
        run: |
-         $ANDROID_HOME/emulator/emulator -list-avds
+         adb version
 
     - name: Create AVD
       run: |

@@ -19,70 +19,47 @@ jobs:
           distribution: 'adopt'
           java-version: '21'
 
+    - name: Set ANDROID_HOME and update PATH
+      run: |
+        echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
+        echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
+
     - name: Create cmdline-tools directory
       run: |
         mkdir -p $ANDROID_HOME/cmdline-tools
 
-    - name: Change to cmdline-tools directory
-      run: |
-        cd $ANDROID_HOME/cmdline-tools
-
     - name: Download cmdline-tools
       run: |
         wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
-
-    - name: Unzip cmdline-tools
-      run: |
-        unzip cmdline-tools.zip
-
-    - name: Move cmdline-tools to latest
-      run: |
-        mv cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-
-    - name: Remove cmdline-tools zip file
-      run: |
+        unzip cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
+        mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
         rm cmdline-tools.zip
 
-    - name: Set ANDROID_HOME and update PATH
+    - name: Install Platform Tools (Includes ADB)
       run: |
-        echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
-        echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH" >> $GITHUB_ENV
+        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+        sdkmanager --install "platform-tools"
 
     - name: Verify ANDROID_HOME
+      run: echo $ANDROID_HOME
+
+    - name: Check ADB Version
+      run: adb version
+
+    - name: Install Emulator
+      run: sudo apt install google-android-emulator-installer -y
+
+    - name: Check Emulator Version
+      run: emulator -version
+
+    - name: Install System Image & Create AVD
       run: |
-        echo $ANDROID_HOME
+        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+        sdkmanager --install "system-images;android-34;google_apis;x86_64"
+        echo "no" | avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" --device "pixel_4"
 
-    -  name: List AVDs before creation
-       run: |
-         adb version
+    - name: List AVDs
+      run: avdmanager list avd
 
-    - name: Install emulater
-      run: |
-           sudo apt install google-android-emulator-installer
-
-
-    - name: emu Version
-      run: |
-           emulator -version
-
-
-    - name: Create AVD
-      run: |
-        $ANDROID_HOME/tools/bin/avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64"
-
-    - name: List AVDs after creation
-      run: |
-           adb version
-
-
-    # - name: Start Emulator
-    #   run: |
-    #     nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-
-    # - name: Wait for Emulator device
-    #   run: |
-    #     $ANDROID_HOME/platform-tools/adb -e wait-for-device
-
-    # - name: List adb devices (after emulator startup)
-    #   run: |
-    #     $ANDROID_HOME/platform-tools/adb devices
+    - name: Verify ADB Again
+      run: adb version

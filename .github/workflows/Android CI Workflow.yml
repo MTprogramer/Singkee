@@ -62,6 +62,9 @@ jobs:
 
     - name: Verify emu
       run: emulator -list-avds
+      
+    - name: Verify emu
+      run: sudo apt install google-android-cmdline-tools-1.0-installer
 
     - name: sreate emulator image
       run: sdkmanager --install "system-images;android-34;google_apis;x86_64"

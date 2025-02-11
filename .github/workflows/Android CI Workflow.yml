@@ -84,8 +84,10 @@ jobs:
 
     - name: Start Emulator
       run: |
+          $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot
 
-        nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -verbose -avd-config-path $ANDROID_AVD_HOME/test.avd &
+
+        # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -verbose -avd-config-path $ANDROID_AVD_HOME/test.avd &
        
 
           # export ANDROID_AVD_HOME=/home/runner/.config/.android/avd

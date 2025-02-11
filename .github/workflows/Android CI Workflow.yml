@@ -63,6 +63,11 @@ jobs:
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --update
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-34;google_apis;x86_64"
 
+    - name: Verify Installed System Images
+      run: |
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list | grep "system-images"
+   
+
     - name: Create AVD
       run: |
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list device

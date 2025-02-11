@@ -78,6 +78,8 @@ jobs:
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-34;google_apis;x86_64"
         sleep 10 
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" --device "pixel" --force
+        echo "List of AVDs after creation:"
+        $ANDROID_HOME/emulator/emulator -list-avds
 
     - name: Verify AVD Creation
       run: |

@@ -50,41 +50,34 @@ jobs:
         adb version || echo "ADB command still not found!"
         adb devices || echo "ADB command still not found!"
 
-    - name: check adb devices
-      run: | 
-          chmod +x $ANDROID_HOME/platform-tools/adb
-          export PATH=$ANDROID_HOME/platform-tools:$PATH
-          adb devices || not found
-
-
-    - name: install emulator
-      run: sudo apt install google-android-emulator-installer
-
-    - name: Verify emu
-      run: emulator -list-avds
-      
-    - name: Verify emu
-      run: sudo apt install google-android-cmdline-tools-1.0-installer
+    - name: Install Emulator
+      run: |
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "emulator"
 
     - name: Accept Licenses
       run: |
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
-
-      
-    - name: Create AVD
+    - name: Install System Image
       run: |
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --update
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-34;google_apis;x86_64"
-        sleep 10 
+
+    - name: Create AVD
+      run: |
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" --device "pixel" --force
         echo "List of AVDs after creation:"
         $ANDROID_HOME/emulator/emulator -list-avds
 
-    - name: Verify AVD Creation
+    - name: Start Emulator
+      run: |
+        nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+
+    - name: Wait for Emulator to Boot
+      run: |
+        $ANDROID_HOME/platform-tools/adb -e wait-for-device
+        $ANDROID_HOME/platform-tools/adb devices
+
+    - name: Verify AVD
       run: |
         $ANDROID_HOME/emulator/emulator -list-avds
-
-
-
-

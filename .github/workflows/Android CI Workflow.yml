@@ -76,17 +76,19 @@ jobs:
     - name: Create AVD
       run: |
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list device
-        $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" -d pixel_5
+        $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" -d pixel_5 --force
         echo "List of AVDs after creation:"
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
 
-        $ANDROID_HOME/emulator/emulator -list-avds
+        ls -la $ANDROID_AVD_HOME
 
     - name: Start Emulator
       run: |
 
           export ANDROID_AVD_HOME=$HOME/.android/avd
-          nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -avd-config-path $HOME/.android/avd/test.avd --sdk_root=$ANDROID_HOME &
+          nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+  
+          # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -avd-config-path $HOME/.android/avd/test.avd --sdk_root=$ANDROID_HOME &
           sleep 60
         
       # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -avd-config-path $ANDROID_AVD_HOME/test.avd &

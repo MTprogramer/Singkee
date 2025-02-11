@@ -66,6 +66,10 @@ jobs:
     - name: Verify emu
       run: sudo apt install google-android-cmdline-tools-1.0-installer
 
+    - name: Accept Licenses
+      run: |
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
       
     - name: sreate emulator image
       run: |

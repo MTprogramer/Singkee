@@ -71,15 +71,12 @@ jobs:
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
 
-    - name: sreate emulator image
-      run: sdkmanager --install "system-images;android-34;google_apis;x86_64"
-          avdmanager create avd -n my_avd -k "system-images;android-34;google_apis;x86_64"
       
-    # - name: Create AVD
-    #   run: |
-    #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --update
-    #     $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-34;google_apis;x86_64"        
-    #     $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64"
+    - name: Create AVD
+      run: |
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --update
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-34;google_apis;x86_64"
+        $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" --force
 
     - name: Verify AVD Creation
       run: |
@@ -90,5 +87,8 @@ jobs:
 
 
 
+    - name: sreate emulator image
+      run: sdkmanager --install "system-images;android-34;google_apis;x86_64"
+          avdmanager create avd -n my_avd -k "system-images;android-34;google_apis;x86_64"
 
 

@@ -58,11 +58,11 @@ jobs:
 
     - name: Install emulater
       run: |
-           sudo apt install google-android-emulator-installer
+           sdkmanager --install "emulator"
 
     - name: emu Version
       run: |
-           emulator -version
+           emulator -list-avds
 
     - name: Create AVD
       run: |

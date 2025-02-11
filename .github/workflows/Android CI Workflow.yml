@@ -58,7 +58,6 @@ jobs:
     - name: Install Emulator
       run: |
          sdkmanager --install "emulator"
-         emulator -list-avds || not found
 
 
         # $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "emulator"

@@ -73,13 +73,13 @@ jobs:
            adb version
 
 
-    - name: Start Emulator
-      run: |
-        nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+    # - name: Start Emulator
+    #   run: |
+    #     nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
 
-    - name: Wait for Emulator device
-      run: |
-        $ANDROID_HOME/platform-tools/adb -e wait-for-device
+    # - name: Wait for Emulator device
+    #   run: |
+    #     $ANDROID_HOME/platform-tools/adb -e wait-for-device
 
     # - name: List adb devices (after emulator startup)
     #   run: |

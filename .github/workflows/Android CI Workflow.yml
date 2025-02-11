@@ -19,7 +19,7 @@ jobs:
         distribution: 'adopt'
         java-version: '21'
 
-    - name: **Remove Existing Android SDK to Prevent Conflicts**
+    - name: Remove Existing Android SDK to Prevent Conflicts
       run: |
         rm -rf $HOME/Android/Sdk
         mkdir -p $HOME/Android/Sdk

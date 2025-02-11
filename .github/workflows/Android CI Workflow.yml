@@ -65,9 +65,8 @@ jobs:
     
     - name: very
       run: |
-         export PATH=$ANDROID_HOME/emulator:$PATH
-         source ~/.bashrc
-         emulator -list-avds || not found
+         $ANDROID_HOME/emulator/emulator -list-avds
+
 
     - name: Accept Licenses
       run: |
@@ -90,7 +89,10 @@ jobs:
         echo "List of AVDs after creation:"
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
 
-        ls -la $ANDROID_AVD_HOME
+
+    - name: very
+      run: |
+         $ANDROID_HOME/emulator/emulator -list-avds
 
     - name: Start Emulator
       run: |

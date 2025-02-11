@@ -19,11 +19,6 @@ jobs:
         distribution: 'adopt'
         java-version: '21'
 
-    - name: Manually Remove Any Existing SDK
-      run: |
-        rm -rf $HOME/Android/Sdk
-        mkdir -p $HOME/Android/Sdk
-
     - name: Set ANDROID_HOME and Update PATH
       run: |
         echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV

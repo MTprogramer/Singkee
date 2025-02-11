@@ -58,7 +58,8 @@ jobs:
 
     - name: Install emulater
       run: |
-           sdkmanager --install "emulator"
+           sudo apt install google-android-emulator-installer
+
 
     - name: emu Version
       run: |

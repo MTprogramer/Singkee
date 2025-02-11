@@ -21,6 +21,8 @@ jobs:
 
     - name: Set ANDROID_HOME and Update PATH
       run: |
+        
+        echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
         echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
         echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
         echo "export ANDROID_HOME=$HOME/Android/Sdk" >> ~/.bashrc
@@ -83,11 +85,9 @@ jobs:
     - name: Start Emulator
       run: |
 
-           # Set the correct AVD path environment variable
-           export ANDROID_AVD_HOME=/home/runner/.config/.android/avd
-
-           nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -avd-config-path /home/runner/.config/.android/avd/test.avd &
-
+          export ANDROID_AVD_HOME=$HOME/.android/avd
+          nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -avd-config-path $HOME/.android/avd/test.avd --sdk_root=$ANDROID_HOME &
+          sleep 60
         
       # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -avd-config-path $ANDROID_AVD_HOME/test.avd &
         # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &

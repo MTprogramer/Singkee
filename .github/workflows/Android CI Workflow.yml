@@ -52,9 +52,9 @@ jobs:
       run: |
         echo $ANDROID_HOME
 
-    - name: List available AVDs
-      run: |
-        emulator -list-avds
+    -  name: List AVDs before creation
+       run: |
+         $ANDROID_HOME/emulator/emulator -list-avds
 
     - name: Create AVD
       run: |
@@ -62,7 +62,8 @@ jobs:
 
     - name: List AVDs after creation
       run: |
-        emulator -list-avds
+           $ANDROID_HOME/emulator/emulator -list-avds
+
 
     - name: Start Emulator
       run: |

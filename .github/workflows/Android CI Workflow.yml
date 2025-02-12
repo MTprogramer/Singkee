@@ -109,7 +109,7 @@ jobs:
       run: ./gradlew connectedCheck
 
     - name: Upload UI Test Report # Saves UI test reports for review
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
        name: instrumentation-test-report
        path: app/build/reports/androidTests/connected/

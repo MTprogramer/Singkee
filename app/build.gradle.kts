@@ -46,25 +46,25 @@ plugins {
                 )
             }
         }
-        java {
-            toolchain {
-                languageVersion = JavaLanguageVersion.of(21) // Make sure to use JDK 21
-            }
-        }
+//        java {
+//            toolchain {
+//                languageVersion = JavaLanguageVersion.of(21) // Make sure to use JDK 21
+//            }
+//        }
 
 
         buildTypes {
             debug {
-                signingConfig = null
+                signingConfig = signingConfigs.getByName("debug")
             }
         }
 
         compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_21
-            targetCompatibility = JavaVersion.VERSION_21
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
         }
         kotlinOptions {
-            jvmTarget = "21"
+            jvmTarget = "17"
         }
         buildFeatures {
             compose = true
@@ -92,9 +92,8 @@ plugins {
 
     dependencies {
 
-
-
-        implementation("org.bouncycastle:bcprov-jdk18on:1.80")
+        androidTestImplementation ("androidx.test.ext:junit-ktx:1.2.1")
+        androidTestImplementation ("android.arch.core:core-testing:1.1.1")
         implementation(libs.androidx.core.ktx)
         implementation(libs.androidx.lifecycle.runtime.ktx)
         implementation(libs.androidx.activity.compose)
@@ -118,7 +117,7 @@ plugins {
         implementation(libs.play.services.auth)
 
         implementation("androidx.compose.material:material:1.7.7")
-        implementation ("com.google.accompanist:accompanist-swiperefresh:0.35.1-alpha")
+//        implementation ("com.google.accompanist:accompanist-swiperefresh:0.35.1-alpha")
 
         implementation("androidx.compose.foundation:foundation:1.7.7") // Adjust version as needed
 

@@ -97,6 +97,10 @@ jobs:
         sleep 60
 
 
+    - name: Wait for Emulator to Boot
+      run: |
+        $ANDROID_HOME/platform-tools/adb -e wait-for-device
+        $ANDROID_HOME/platform-tools/adb devices
      
     - name: Ensure ADB running fine
       run: |
@@ -111,12 +115,12 @@ jobs:
     - name: Invalidate Gradle Cache
       run: ./gradlew --refresh-dependencies
 
-    - name: check comflict
-      run: ./gradlew app:dependencies | grep bouncycastle
+    # - name: check comflict
+    #   run: ./gradlew app:dependencies | grep bouncycastle
 
       
-    - name: Debug Dependencies
-      run: ./gradlew app:dependencies --configuration implementation | grep bouncycastle
+    # - name: Debug Dependencies
+    #   run: ./gradlew app:dependencies --configuration implementation | grep bouncycastle
 
     - name: Print Java Version
       run: java -version
@@ -161,10 +165,6 @@ jobs:
     #     source ~/.bashrc
       
 
-    # - name: Wait for Emulator to Boot
-    #   run: |
-    #     $ANDROID_HOME/platform-tools/adb -e wait-for-device
-    #     $ANDROID_HOME/platform-tools/adb devices
 
     # - name: Verify AVD
     #   run: |

@@ -93,7 +93,7 @@ jobs:
         echo "List of AVDs after creation:"
         # $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
         avdmanager list avd
-        -avd test -no-window -gpu swiftshader_indirect -no-snapshot
+        emulator-avd test -no-window -gpu swiftshader_indirect -no-snapshot
 
         
 

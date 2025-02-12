@@ -78,18 +78,33 @@ jobs:
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
 
 
-    - name: very
+    - name: Verify AVD
       run: |
-         $ANDROID_HOME/emulator/emulator -list-avds
-         
+          export ANDROID_AVD_HOME=$HOME/.config/.android/avd
+          echo "AVD Home: $ANDROID_AVD_HOME"
+          ls $ANDROID_AVD_HOME  # List the contents of the AVD directory
+          $ANDROID_HOME/emulator/emulator -list-avds
 
     - name: Start Emulator
       run: |  
-           export ANDROID_AVD_HOME=$HOME/.android/avd
+        export ANDROID_AVD_HOME=$HOME/.config/.android/avd
+        $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+        sleep 60
+        
 
-           $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-           nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-              sleep 60
+
+    # - name: very
+    #   run: |
+    #      $ANDROID_HOME/emulator/emulator -list-avds
+         
+
+    # - name: Start Emulator
+    #   run: |  
+    #        export ANDROID_AVD_HOME=$HOME/.android/avd
+
+    #        $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+    #        nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+    #           sleep 60
          
 
     # - name: Set ANDROID_HOME and Update PATH

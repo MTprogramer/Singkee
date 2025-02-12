@@ -91,8 +91,10 @@ jobs:
 
         # $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-29;default;x86_64" -d pixel_5 --force
         echo "List of AVDs after creation:"
-        $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
+        # $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
         avdmanager list avd
+        -avd test -no-window -gpu swiftshader_indirect -no-snapshot
+
         
 
 
@@ -105,16 +107,16 @@ jobs:
       run: |
 
 
-          $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot
+          # $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot
 
 
            # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -verbose -avd-config-path $ANDROID_AVD_HOME/test.avd &
        
 
-          export ANDROID_AVD_HOME=/home/runner/.config/.android/avd
-          ls -la $ANDROID_AVD_HOME  # Confirm the existence of the .avd folder and test.ini file
-           nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-          sleep 60
+          # export ANDROID_AVD_HOME=/home/runner/.config/.android/avd
+          # ls -la $ANDROID_AVD_HOME  # Confirm the existence of the .avd folder and test.ini file
+          #  nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+          # sleep 60
          
 
           # export ANDROID_AVD_HOME=$HOME/.android/avd

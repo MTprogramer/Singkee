@@ -19,15 +19,15 @@ jobs:
         distribution: 'adopt'
         java-version: '21'
 
-    - name: Set ANDROID_HOME and Update PATH
-      run: |
+    # - name: Set ANDROID_HOME and Update PATH
+    #   run: |
         
-        echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
-        # echo "ANDROID_HOME=$HOME/.android/avd" >> $GITHUB_ENV
-        echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
-        echo "export ANDROID_HOME=$HOME/Android/Sdk" >> ~/.bashrc
-        echo "export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> ~/.bashrc
-        source ~/.bashrc
+    #     echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
+    #     # echo "ANDROID_HOME=$HOME/.android/avd" >> $GITHUB_ENV
+    #     echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
+    #     echo "export ANDROID_HOME=$HOME/Android/Sdk" >> ~/.bashrc
+    #     echo "export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> ~/.bashrc
+    #     source ~/.bashrc
 
     - name: Manually Download Command Line Tools
       run: |
@@ -42,6 +42,7 @@ jobs:
 
     - name: Manually Download & Extract Platform Tools (ADB)
       run: |
+        echo $ANDROID_HOME
         wget https://dl.google.com/android/repository/platform-tools-latest-linux.zip -O platform-tools.zip
         unzip platform-tools.zip -d $ANDROID_HOME
         rm platform-tools.zip

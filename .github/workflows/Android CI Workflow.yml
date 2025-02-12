@@ -103,6 +103,16 @@ jobs:
         chmod +x $ANDROID_HOME/platform-tools/adb
         export PATH=$ANDROID_HOME/platform-tools:$PATH
         adb devices || echo "ADB command still not found!"
+
+
+    - name: run test
+      run: ./gradlew connectedCheck
+
+    - name: Upload UI Test Report # Saves UI test reports for review
+      uses: actions/upload-artifact@v2
+      with:
+       name: instrumentation-test-report
+       path: app/build/reports/androidTests/connected/
         
 
 

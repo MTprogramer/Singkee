@@ -105,8 +105,11 @@ jobs:
         adb devices || echo "ADB command still not found!"
 
 
-    - name: run test
-      run: ./gradlew connectedCheck
+    - name: Clean Project
+      run: ./gradlew clean
+
+    - name: Run Tests
+      run: ./gradlew connectedCheck --stacktrace --info
 
     - name: Upload UI Test Report # Saves UI test reports for review
       uses: actions/upload-artifact@v4

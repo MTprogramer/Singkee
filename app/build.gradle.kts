@@ -125,6 +125,8 @@ plugins {
     //    implementation(libs.facebook.android.sdk)
     //    implementation("com.facebook.android:facebook-android-sdk:latest.release")
 
+
+
         implementation("com.facebook.android:facebook-login:17.0.0")
 
         implementation("com.google.code.gson:gson:2.11.0")

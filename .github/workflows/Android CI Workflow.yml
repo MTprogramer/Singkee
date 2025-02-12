@@ -58,10 +58,7 @@ jobs:
 
     - name: Install Emulator
       run: |
-         # sdkmanager --install "emulator"
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "emulator"
-
-    
 
 
     - name: Accept Licenses
@@ -71,7 +68,7 @@ jobs:
     - name: Install System Image
       run: |
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --update
-        # $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-34;google_apis;x86_64"
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-29;google_apis;x86_64"
 
 
     - name: Verify Installed System Images

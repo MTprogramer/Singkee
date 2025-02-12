@@ -19,10 +19,6 @@ jobs:
         distribution: 'adopt'
         java-version: '21'
 
-    - name: Check Java version
-      run: java -version
-
-
     - name: Enable KVM group perms
       run: |
         echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -116,8 +112,13 @@ jobs:
       run: ./gradlew --refresh-dependencies
 
     - name: Debug Dependencies
-      run: ./gradlew dependencies --configuration runtimeClasspath
+      run: ./gradlew app:dependencies --configuration implementation | grep bouncycastle
 
+    - name: Print Java Version
+      run: java -version
+
+    - name: Print Classpath
+      run: echo $CLASSPATH
  
 
     - name: Run Tests

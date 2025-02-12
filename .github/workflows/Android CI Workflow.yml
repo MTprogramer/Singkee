@@ -95,6 +95,14 @@ jobs:
         export ANDROID_AVD_HOME=$HOME/.config/.android/avd
         $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
         sleep 60
+
+
+     
+    - name: Ensure ADB running fine
+      run: |
+        chmod +x $ANDROID_HOME/platform-tools/adb
+        export PATH=$ANDROID_HOME/platform-tools:$PATH
+        adb devices || echo "ADB command still not found!"
         
 
 

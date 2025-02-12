@@ -81,7 +81,7 @@ jobs:
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list device
 
 
-        $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-29;default;x86_64" -d pixel_5 --force
+        $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-29;default;x86_64" -d pixel_3 --force
         echo "List of AVDs after creation:"
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
 
@@ -95,31 +95,12 @@ jobs:
       run: |
 
 
-          # $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot
+          $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
 
 
-           # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -verbose -avd-config-path $ANDROID_AVD_HOME/test.avd &
-       
-
-          # export ANDROID_AVD_HOME=/home/runner/.config/.android/avd
-          # ls -la $ANDROID_AVD_HOME  # Confirm the existence of the .avd folder and test.ini file
-          #  nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-          # sleep 60
-         
-
-          # export ANDROID_AVD_HOME=$HOME/.android/avd
-          # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-  
-          nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -avd-config-path $HOME/.android/avd/test.avd --sdk_root=$ANDROID_HOME &
+          nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
           sleep 60
-        
-      # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -avd-config-path $ANDROID_AVD_HOME/test.avd &
-        # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-
-    - name: run game 
-      run: |
-          ls $ANDROID_AVD_HOME
-          $ANDROID_HOME/emulator/emulator -list-avds
+         
 
 
       

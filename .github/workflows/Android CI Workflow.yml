@@ -97,7 +97,6 @@ jobs:
       run: |
          $ANDROID_HOME/emulator/emulator -list-avds
          
-         $ANDROID_HOME/emulator ls
 
     - name: Start Emulator
       run: |

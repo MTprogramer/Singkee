@@ -72,7 +72,7 @@ jobs:
       run: |
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --update
         # $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-34;google_apis;x86_64"
-        sdkmanager --list
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
 
 
     - name: Verify Installed System Images

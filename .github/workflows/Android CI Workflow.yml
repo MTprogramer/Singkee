@@ -85,14 +85,13 @@ jobs:
 
         
         export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        sdkmanager --install "system-images;android-34;google_apis;x86_64"
-        echo "no" | avdmanager create avd -n test -k "system-images;android-34;google_apis;x86_64" --device "pixel_4"
+        sdkmanager --install "system-images;android-29;google_apis;x86_64"
+        echo "no" | avdmanager create avd -n test -k "system-images;android-29;google_apis;x86_64" --device "pixel_4"
 
         # $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-29;default;x86_64" -d pixel_5 --force
         echo "List of AVDs after creation:"
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
         
-        emulator -avd your_avd_name
 
 
     - name: very

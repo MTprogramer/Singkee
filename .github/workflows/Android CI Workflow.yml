@@ -19,15 +19,7 @@ jobs:
         distribution: 'adopt'
         java-version: '21'
 
-    # - name: Set ANDROID_HOME and Update PATH
-    #   run: |
-        
-    #     echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
-    #     # echo "ANDROID_HOME=$HOME/.android/avd" >> $GITHUB_ENV
-    #     echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
-    #     echo "export ANDROID_HOME=$HOME/Android/Sdk" >> ~/.bashrc
-    #     echo "export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> ~/.bashrc
-    #     source ~/.bashrc
+
 
     - name: Manually Download Command Line Tools
       run: |
@@ -92,17 +84,23 @@ jobs:
          
 
     - name: Start Emulator
-      run: |
+      run: |  
+           export ANDROID_AVD_HOME=$HOME/.android/avd
 
-
-          $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-
-
-          nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-          sleep 60
+           $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+           nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+              sleep 60
          
 
-
+    # - name: Set ANDROID_HOME and Update PATH
+    #   run: |
+        
+    #     echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
+    #     # echo "ANDROID_HOME=$HOME/.android/avd" >> $GITHUB_ENV
+    #     echo "PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH" >> $GITHUB_ENV
+    #     echo "export ANDROID_HOME=$HOME/Android/Sdk" >> ~/.bashrc
+    #     echo "export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> ~/.bashrc
+    #     source ~/.bashrc
       
 
     # - name: Wait for Emulator to Boot

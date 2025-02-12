@@ -6,6 +6,7 @@ plugins {
         id ("com.google.dagger.hilt.android")
         id("org.jetbrains.kotlin.kapt")
         alias(libs.plugins.google.gms.google.services)
+//        id("com.google.devtools.ksp")
         id("org.sonarqube")
 
     }
@@ -92,7 +93,8 @@ plugins {
     dependencies {
 
 
-        implementation ("org.bouncycastle:bcprov-jdk15on:1.70")
+
+        implementation("org.bouncycastle:bcprov-jdk18on:1.80")
         implementation(libs.androidx.core.ktx)
         implementation(libs.androidx.lifecycle.runtime.ktx)
         implementation(libs.androidx.activity.compose)
@@ -145,7 +147,7 @@ plugins {
 
 
         implementation("com.github.bumptech.glide:glide:4.16.0")
-        annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+        kapt("com.github.bumptech.glide:compiler:4.15.1")
 
 
 

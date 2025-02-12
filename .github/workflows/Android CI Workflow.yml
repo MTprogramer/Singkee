@@ -55,6 +55,8 @@ jobs:
         which adb || echo "ADB not found in PATH!"
         adb version || echo "ADB command still not found!"
         adb devices || echo "ADB command still not found!"
+        emulator -version
+        emulator -list-avds
 
     - name: Install Emulator
       run: |

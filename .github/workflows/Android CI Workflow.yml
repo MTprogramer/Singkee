@@ -46,7 +46,6 @@ jobs:
         wget https://dl.google.com/android/repository/platform-tools-latest-linux.zip -O platform-tools.zip
         unzip platform-tools.zip -d $ANDROID_HOME
         rm platform-tools.zip
-        ls -la $ANDROID_HOME/platform-tools
 
     - name: Ensure ADB is Installed and Working
       run: |
@@ -73,6 +72,8 @@ jobs:
       run: |
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --update
         # $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-34;google_apis;x86_64"
+        sdkmanager --list
+
 
     - name: Verify Installed System Images
       run: |
@@ -91,6 +92,8 @@ jobs:
         # $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-29;default;x86_64" -d pixel_5 --force
         echo "List of AVDs after creation:"
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
+        
+          emulator -avd your_avd_name
 
 
     - name: very
@@ -100,16 +103,18 @@ jobs:
 
     - name: Start Emulator
       run: |
+
+
           $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot
 
 
-        # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -verbose -avd-config-path $ANDROID_AVD_HOME/test.avd &
+           # nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -verbose -avd-config-path $ANDROID_AVD_HOME/test.avd &
        
 
-          # export ANDROID_AVD_HOME=/home/runner/.config/.android/avd
-          # ls -la $ANDROID_AVD_HOME  # Confirm the existence of the .avd folder and test.ini file
-          #  nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
-          # sleep 60
+          export ANDROID_AVD_HOME=/home/runner/.config/.android/avd
+          ls -la $ANDROID_AVD_HOME  # Confirm the existence of the .avd folder and test.ini file
+           nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot &
+          sleep 60
          
 
           # export ANDROID_AVD_HOME=$HOME/.android/avd
